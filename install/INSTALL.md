@@ -74,7 +74,7 @@ Lastly, torch and torchvision must be installed according to pytorch.org. `pip i
 - `GRANT ALL PRIVILEGES ON DATABASE eagle_eye TO username;`  # Replace the word "**username**" with your actual linux username.
 - `\q`
 - `exit`
-- cd `$EAGLE_EYE_PATH/install`
+- cd `$EAGLE_EYE_PATH/install/migrations`
 - `psql -d eagle_eye < 0-postgres_init.sql`
 - `psql -d eagle_eye < 1-migration.sql`
 - (if there are any addition x-migration.sql files, then also perform the same commands for them as above in a CONESECUTIVE order (based on their numbers)).
