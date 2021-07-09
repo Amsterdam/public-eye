@@ -14,7 +14,7 @@ module.exports = R.mergeDeepLeft(masterConfig, {
     schedulerInterval: 1000,
     logDirectory: process.env['EAGLE_EYE_PATH'] + '/.scheduler',
     maxParallel: 4,
-    source_cmd:  `source ${process.env['EAGLE_EYE_PATH']}/eagle_eye_p3/bin/activate`,
+    source_cmd: `source ${process.env['EAGLE_EYE_PATH']}/eagle_eye_p3/bin/activate`,
     command: 'bash',
   },
   basePath: process.env['EAGLE_EYE_PATH'],

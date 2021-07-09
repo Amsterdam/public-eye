@@ -142,7 +142,14 @@ const getTrainingRunById = (db) => async (id) => {
 
 const getTrainingRunByJobId = (db) => async (id) => {
   try {
-    const query = "SELECT * FROM training_runs WHERE job_id = $1"
+    const query = `
+      SELECT *, training_runs.id as id, train_script, date, config_id, job_id, job_status, job_script_payload, models.id as model_id, models.annotation as model_annotation, models.name as model_name, models.path as model_path, neural_network_type.name as nn_type
+      FROM training_runs
+      LEFT JOIN models ON training_runs.model_id = models.id
+      LEFT JOIN neural_networks ON training_runs.neural_network_id = neural_networks.id
+      LEFT JOIN neural_network_type ON neural_network_type.id = neural_networks.nn_type_id
+      JOIN jobs ON training_runs.job_id = jobs.id
+      WHERE job_id = $1`
     const res = await db.query(query, [id])
 
     return res.rows[0] || null
