@@ -1,0 +1,71 @@
+
+{
+  "root": true,
+  "env": {
+    "es6": true,
+    "node": true,
+    "browser": true
+  },
+  // "extends": [
+  //   "react-app",
+  //   "airbnb", //,
+  //   // "plugin:import/warnings", 
+  //   "plugin:@typescript-eslint/eslint-recommended",
+  //   "plugin:@typescript-eslint/recommended",
+  //   "plugin:react-hooks/recommended",
+  //   "plugin:@typescript-eslint/recommended"
+  // ],
+  "extends": [
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    // "plugin:promise/recommended",
+    // "plugin:unicorn/recommended",
+    // "prettier",
+    // "prettier/react",
+    // "prettier/@typescript-eslint",
+    "airbnb-typescript",
+    // "airbnb/hooks" //,
+    // "airbnb",
+    // "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    // "plugin:import/errors",
+    // "plugin:import/warnings",
+    // "plugin:react/recommended",
+    // "plugin:react-hooks/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true,
+      "experimentalObjectRestSpread": true
+    },
+    "project": "./tsconfig.json"
+  },
+  "plugins": [
+    "react-hooks",
+    "@typescript-eslint"
+  ],
+  "rules": {
+    "semi": 0,
+    "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/semi": "off",
+    "camelcase": "off",
+    "import/no-cycle": "off",
+    "no-use-before-define": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "react/no-array-index-key": "off",
+    "jsx-a11y/media-has-caption": "off",
+    "react/jsx-filename-extension": "off",
+    "import/no-unresolved": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "error",
+    "import/no-extraneous-dependencies": "off",
+    "eslint-comments/disable-enable-pair": "off",
+    "eslint-comments/no-unlimited-disable": "off"
+  }
+}

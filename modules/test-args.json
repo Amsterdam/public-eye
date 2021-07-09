@@ -1,0 +1,7 @@
+{
+    "intervals": {
+        "type": "int",
+        "default": 15,
+        "required": true
+    }
+}

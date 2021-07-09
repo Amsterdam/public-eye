@@ -1,0 +1,82 @@
+{
+    "train_dataset_id": {
+        "required": true,
+        "type": "int"
+    },
+    "val_dataset_id": {
+        "required": true,
+        "type": "int"
+    },
+    "model_name": {
+        "required": true,
+        "type": "string"
+    },
+    "batch_size": {
+        "required": false,
+        "type": "int",
+        "default": 1
+    },  
+    "workers": {
+        "required": false,
+        "default": 4,
+        "type": "int"
+    },
+    "lr": {
+        "required": false,
+        "default": 1e-4,
+        "type": "float"
+    },
+    "weight_decay": {
+        "required": false,
+        "default": 1e-5,
+        "type": "float"
+    },
+    "epochs": {
+        "required": false,
+        "default": 30,
+        "type": "int"
+    },
+    "print_freq": {
+        "required": false,
+        "default": 30,
+        "type": "int"
+    },
+    "gamma": {
+        "required": false,
+        "default": 0.1,
+        "type": "float"
+    },
+    "decay": {
+        "required": false,
+        "default": 5e-4,
+        "type": "float"
+    },
+    "steps": {
+        "required": false,
+        "default": [10, 24, 100, 140],
+        "type": "array",
+        "shape": "int"
+    },
+    "scale_factor": {
+        "required": false,
+        "default": 1.0,
+        "type": "float"
+    },
+    "enhance": {
+        "required": false,
+        "default": false,
+        "type": "boolean"
+    },
+    "pretrained_model_id": {
+        "required": false,
+        "type": "int"
+    },
+    "train_last_layers": {
+        "required": false,
+        "type": "int"
+    },
+    "selected_gpu": {
+        "required": false,
+        "type": "int"
+    }
+}

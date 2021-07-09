@@ -1,0 +1,87 @@
+{
+    "train_dataset_id": {
+        "required": true,
+        "type": "int"
+    },
+    "val_dataset_id": {
+        "required": true,
+        "type": "int"
+    },
+    "model_name": {
+        "required": true,
+        "type": "string"
+    },
+    "epochs": {
+        "required": false,
+        "type": "int",
+        "default": 150
+    },
+    "batch_size": {
+        "required": false,
+        "type": "int",
+        "default": 6
+    },
+    "accumulate": {
+        "required": false,
+        "type": "int",
+        "default": 4
+    },
+    "img_size": {
+        "required": false,
+        "type": "array",
+        "shape": "int",
+        "default": [416]
+    },
+    "rect": {
+        "required": false,
+        "type": "boolean",
+        "default": false
+    },
+    "multi_scale": {
+        "required": false,
+        "type": "boolean",
+        "default": false
+    },
+    "device": {
+        "required": false,
+        "type": "string",
+        "default": ""
+    },
+    "cache_images": {
+        "required": false,
+        "type": "boolean",
+        "default": false
+    },
+    "notest": {
+        "required": false,
+        "type": "boolean",
+        "default": false
+    },
+    "nosave": {
+        "required": false,
+        "type": "boolean",
+        "default": false
+    },
+    "evolve": {
+        "required": false,
+        "type": "boolean",
+        "default": false
+    },
+    "adam": {
+        "required": false,
+        "type": "boolean",
+        "default": true
+    },
+    "pretrained_model_id": {
+        "required": false,
+        "type": "int"
+    },
+    "train_last_layers": {
+        "required": false,
+        "type": "int"
+    },
+    "selected_gpu": {
+        "required": false,
+        "type": "int"
+    }
+}

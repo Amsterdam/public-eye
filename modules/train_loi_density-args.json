@@ -1,0 +1,126 @@
+{
+    "train_split": {
+        "required": false,
+        "default": 24,
+        "type": "int"
+    },
+    "lr_setting": {
+        "required": false,
+        "type": "string",
+        "default": "adam_9"
+    },
+    "model": {
+        "required": false,
+        "type": "string",
+        "default":  "p21small"
+    },
+    "density_model": {
+        "required": false,
+        "type": "string",
+        "default": "fixed-8"
+    },
+    "resize_patch": {
+        "required": false,
+        "type": "string",
+        "default": "off"
+    },
+    "epochs": {
+        "required": false,
+        "type": "int",
+        "default": 500
+    },
+    "resize_mode": {
+        "required": false,
+        "type": "string",
+        "default": "bilinear"
+    },
+    "loss_focus": {
+        "required": false,
+        "type": "string",
+        "default": "full"
+    },
+    "cc_weight": {
+        "required": false,
+        "type": "int",
+        "default": 50
+    },
+    "batch_size": {
+        "required": false,
+        "type": "int",
+        "default": 1
+    },
+    "dataloader_workers": {
+        "required": false,
+        "type": "int",
+        "default": 2
+    },
+    "loss_function": {
+        "required": false,
+        "type": "string",
+        "default": "L2"
+    },
+    "optimizer": {
+        "required": false,
+        "type": "string",
+        "default": "adam"
+    },
+    "resize_to_orig": {
+        "required": false,
+        "type": "boolean",
+        "default": true
+    },
+    "test_epochs": {
+        "required": false,
+        "type": "int",
+        "default": 5
+    },
+    "cross_val_amount": {
+        "required": false,
+        "type": "int",
+        "default": 50
+    },
+    "train_amount": {
+        "required": false,
+        "type": "int",
+        "default": 200
+    },
+    "loi_flow_smoothing": {
+        "required": false,
+        "type": "boolean",
+        "default": false
+    },
+    "loi_flow_width": {
+        "required": false,
+        "type": "boolean",
+        "default": false
+    },
+    "train_dataset_id": {
+        "required": true,
+        "type": "int"
+    },
+    "val_dataset_id": {
+        "required": true,
+        "type": "int"
+    },
+    "model_name": {
+        "required": true,
+        "type": "string"
+    },
+    "pretrained_model_id": {
+        "required": false,
+        "type": "int"
+    },
+    "train_last_layers": {
+        "required": false,
+        "type": "int"
+    },
+    "selected_gpu": {
+        "required": false,
+        "type": "int"
+    },
+    "save_dir": {
+        "required": false,
+        "type": "boolean",
+        "default": false
+    }
+}

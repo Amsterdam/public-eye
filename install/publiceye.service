@@ -1,0 +1,14 @@
+[Unit]
+Description=Public Eye
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+Environment="EAGLE_EYE_PATH=/opt/eagle_eye"
+Environment="PYTHONPATH=${PYTHONPATH}:/opt/eagle_eye"
+ExecStart=/usr/bin/node /opt/eagle_eye/backend/index.js
+User=eagle
+WorkingDirectory=/opt/eagle_eye
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
