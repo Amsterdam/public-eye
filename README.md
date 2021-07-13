@@ -45,7 +45,7 @@ De afgelopen jaren hebben er grote verbeteringen plaatsgevonden in het vakgebied
 
 Tijdens de ontwikkeling van Public Eye zijn er vele visuele crowd counting algoritmes bekeken die recentelijk vanuit de wetenschap ontwikkeld zijn. Meerdere van deze algoritmen zijn in de praktijk uitgeprobeerd om de prestaties te bekijken, maar ook om te zien of deze voldoen aan de wensen van het project m.b.t. maatschappelijk perspectief.
 
-In de praktijk is er bij Public Eye voor gekozen om voornamelijk gebruik te maken van de bestaande algoritmen CSRNet en YOLO V5 voor personen telling. Daarnaast is vanuit het Public Eye team zelf een crossing-line algoritme ontwikkeld, en is er een ander algoritme voor personentelling ontwikkeld (ViCCT) dat op het gebied van prestaties en maatschappelijke aspecten enorme verbeteringen maakt ten opzichte van CSRNet en YOLO V5. In de onderstaande bullets nemen we in vogelvlucht de zojuist genoemde algoritmen door.
+In de praktijk is er bij Public Eye voor gekozen om voornamelijk gebruik te maken van de bestaande algoritmen CSRNet en YOLO V5 voor personentelling. Daarnaast is vanuit het Public Eye team zelf een crossing-line algoritme ontwikkeld. In onderstaande bullets nemen we deze algoritmen in vogelvlucht door.
 
 - **CSRNet (2018)**
   - CSRNet is een ‘convolutional neural network’ dat is ontwikkeld om een “dichtheidskaart” te maken op basis van beelden van groepen mensen. Een dergelijke dichtheidskaart geeft een schatting hoeveel mensen er in beeld staan en hoe dicht zij bij elkaar staan.
@@ -71,17 +71,6 @@ In de praktijk is er bij Public Eye voor gekozen om voornamelijk gebruik te make
   - Dit algoritme werkt goed in complexe situaties waarbij grote groepen mensen in beeld zijn en mogelijk voor en achter elkaar langs lopen.
   - [Link naar thesis](https://scripties.uba.uva.nl/search?id=720005).
   - [Link naar GitHub](https://github.com/ijanerik/Crossing-Line-Counting).
-- **ViCCT (2021)**
-  - Dit algoritme is ontwikkeld met het Public Eye team, binnen een afstudeerproject van een UvA KI masterstudent. Dit algoritme maakt gebruik van transformers. Transformers zijn diepe neurale netwerken die van origine zijn ontwikkeld voor tekstverwerking en die gebruik maken van ‘attentie’-mechanismen.
-  - ![img](https://lh6.googleusercontent.com/uqrImshDFPruAGIaPz22Y8xF0oQf1wpacdGYRMT5d24aUqViPy_bmpnjADWWNuyAVqJkES4nIbIB3Vwd-0kOByu1gM0a_P8c9mzh20XNjzQVFXlvM2-ojwjos-21lyKA-WLBJ6AE)
-  - ViCCT is ontwikkeld als een alternatief op CSRNet. Net als CSRNet genereert dit algoritme dichtheidskaarten. Echter presteert ViCCT doorgaans een stuk beter dan CSRNet op een aantal vlakken:
-    - Wanneer er voldoende geannoteerde beelden zijn die lijken op het beeld van een nieuwe camera, dan kan ViCCT met ca. 90% minder geannoteerde beelden dan CSRNet een vergelijkbaar presterend camera-specifiek model te trainen voor deze nieuwe camera.
-      - Dit heeft als voordeel dat er significant minder tijd en werk besteed hoeft te worden aan de annotatie van beelden. Dit verlaagt de hoeveelheid benodigde menselijke ‘interventie’ waarbij er naar ruwe beelddata gekeken wordt.
-      - Een ander voordeel is dat er veel minder data verzameld en bewaard hoeft te worden voor training en auditing doeleinden.
-    - Met behulp van ViCCT kan een goed presterend **generiek** voorspelmodel getraind worden, wanneer dit model gevoed wordt met een grote en gevarieerde set aan geannoteerde datasets.
-      - Dit **generieke** ViCCT model presteert doorgaans wat minder goed dan **camera-specifieke** ViCCT modellen, maar veel beter dan **generieke** CSRNet modellen. De prestaties zullen voor veel niet-kritische situaties acceptabel zijn.
-      - Hiermee is dit model een zeer interessante optie om in te zetten wanneer er GEEN annotatie plaats kan vinden bij de inzet van een nieuwe camera.
-      - Met verder werk, zoals de aggregatie van (publieke) datasets en verder onderzoek, kan er wellicht een **generiek** ViCCT-like model worden gemaakt dat beter presteert, en daarmee de noodzaak voor data annotatie (en daarmee menselijke interventie) verder vermindert.
 
 
 
@@ -117,11 +106,6 @@ Hieronder volgt een lijst met de belangrijkste onderliggende software pakketten 
 
   - PostgreSQL is een relationeel database-systeem, waar efficiënt grote hoeveelheden gegevens kunnen worden opgeslagen en opgevraagd.
   - Binnen Public Eye wordt PostgreSQL gebruikt om alle onderliggende data die Public Eye nodig heeft te beheren. Denk hierbij bijvoorbeeld aan: informatie over de camera’s (locatie, framerate, regions-of-interest), datasets (foto’s + annotaties, welke gebruikt kunnen worden om neurale netwerken te trainen), neurale netwerken (getrainde gewichten voor een netwerk) en gebruikers (welke gebruikers zijn er, en welke rol/rechten hebben zijn in Public Eye).
-
-- **Go**
-
-  - Go is een zeer efficiënte programmeertaal die regelmatig wordt gebruikt voor het inrichten processen die netwerkverkeer afhandelen. 
-  - Binnen Public Eye wordt Go gebruikt gebruikt om de data die de slimme algoritmes genereren door te sturen naar andere servers, zoals naar een ‘data broker’. Maar ook naar de servers waar operationele dashboards hun data vandaan kunnen halen.
 
 - **Git**
 
