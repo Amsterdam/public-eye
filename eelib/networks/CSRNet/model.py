@@ -12,7 +12,7 @@ class CSRNet(nn.Module):
         self.frontend = make_layers(self.frontend_feat)
         self.backend = make_layers(self.backend_feat,in_channels = 512,dilation = True)
         self.output_layer = nn.Conv2d(64, 1, kernel_size=1)
-        if args['pretrained_model_id'] is None:
+        if 'pretrained_model_id' in args and args['pretrained_model_id'] is None:
             mod = models.vgg16(pretrained = True)
             self._initialize_weights()
 
