@@ -12,7 +12,7 @@ class NNRegistry(object):
 
         if network_name == "train_csrnet.py":
             from eelib.networks.CSRNet.model import CSRNet
-            nn = CSRNet()
+            nn = CSRNet({})
         elif network_name == "train_cacc.py":
             from eelib.networks.CACC.model import CANNet
             nn = CANNet()
