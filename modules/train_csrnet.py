@@ -1,8 +1,9 @@
-import torch
-import eelib.ml.standard_transform as transform
-from eelib.networks.CSRNet.model import CSRNet
-from eelib.ml_density.utils import load_data
-from eelib.ml_density.train_model_template import get_main
+from eelib.ml.initialize_module import initialize_module
+from eelib.ml_density.train_configs.csrnet_config import (
+    Config
+)
+from eelib.ml_density.train import Trainer
+from eelib.job import parse_arguments
 
 """
 example
@@ -16,33 +17,22 @@ example
 }
 """
 
-criterion = torch.nn.MSELoss(size_average=False).cuda()
 
+@parse_arguments('modules/train_csrnet-args.json')
+def main(args):
+    training_run, model, args = initialize_module(
+        'CSRNet', args)
+    config = Config(model, args)
 
-def optimizer_constructor(model, args):
-    return torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()),
-                           args['lr'],
-                           momentum=args['momentum'],
-                           weight_decay=args['decay'])
-
-
-def scheduler_constructor(optimizer, args):
-    return torch.optim.lr_scheduler.MultiStepLR(
-        optimizer,
-        gamma=args['gamma'],
-        milestones=args['steps']
+    tr = Trainer(
+        model,
+        args,
+        config,
+        'CSRNet',
+        training_run.id,
+        training_run.log_file_path
     )
+    tr.train()
 
-
-main = get_main(
-    args_file="modules/train_csrnet-args.json",
-    script_name="train_csrnet.py",
-    model_constructor=CSRNet,
-    criterion=criterion,
-    optimizer_constructor=optimizer_constructor,
-    scheduler_constructor=scheduler_constructor,
-    load_data=load_data,
-    transform=transform.standard_transform
-)
-
-main()
+if __name__ == "__main__":
+    main()

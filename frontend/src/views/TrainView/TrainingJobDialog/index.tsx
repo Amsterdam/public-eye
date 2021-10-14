@@ -77,26 +77,28 @@ const useDatasetsByNNType = (nnType: string | undefined): Dataset[] => {
   const dispatch = useThunkDispatch()
   const [nnTypeToDatasets, setNnTypeToDatasets] = useState<Record<string, Dataset[]>>({})
 
+  const trimmed = nnType ? nnType.replace('_transformer', '') : nnType
+
   useEffect(() => {
-    if (nnType === undefined) {
+    if (trimmed === undefined) {
       return
     }
 
-    if (!nnTypeToDatasets[nnType]) {
-      dispatch(getDatasets(null, null, nnType))
+    if (!nnTypeToDatasets[trimmed]) {
+      dispatch(getDatasets(null, null, trimmed))
         .then((result) => {
           if (result) {
             setNnTypeToDatasets((old) => ({
               ...old,
-              [nnType]: result,
+              [trimmed]: result,
             }))
           }
         })
     }
-  }, [nnType, nnTypeToDatasets, dispatch])
+  }, [trimmed, nnTypeToDatasets, dispatch])
 
-  return nnType && nnTypeToDatasets[nnType]
-    ? nnTypeToDatasets[nnType]
+  return trimmed && nnTypeToDatasets[trimmed]
+    ? nnTypeToDatasets[trimmed]
     : []
 }
 
@@ -353,11 +355,13 @@ const TrainingJobDialog = ({
                   value={trainScript}
                 >
                   {
-                    neuralNetworks.map(({ id, train_script: scriptName, name: nnName }, index) => (
-                      <MenuItem key={index} value={id}>
-                        {nnName || scriptName}
-                      </MenuItem>
-                    ))
+                    neuralNetworks
+                      .filter(({ hidden_to_user }: { hidden_to_user: boolean }) => !hidden_to_user)
+                      .map(({ id, train_script: scriptName, name: nnName }, index) => (
+                        <MenuItem key={index} value={id}>
+                          {nnName || scriptName}
+                        </MenuItem>
+                      ))
                   }
                 </Select>
               </FormControl>

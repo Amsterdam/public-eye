@@ -83,5 +83,10 @@
     "selected_gpu": {
         "required": false,
         "type": "int"
+    },
+    "eval_every": {
+        "required": false,
+        "default": 1,
+        "type": "int"
     }
 }

@@ -14,7 +14,8 @@ from eelib.websocket import send_websocket_message
 
 @parse_arguments('modules/train_loi_density-args.json')
 def main(arguments):
-    training_run, model, args = initialize_module(arguments, load_model)
+    training_run, model, args = initialize_module(
+        "Line of Interest Density", arguments)
     job_id = sys.argv[1]
     args['dataset'] = args['train_dataset_id']
 
@@ -50,5 +51,5 @@ def main(arguments):
 
     train(model, args)
 
-
-main()
+if __name__ == "__main__":
+    main()

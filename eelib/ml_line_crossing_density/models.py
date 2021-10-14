@@ -8,10 +8,7 @@ from eelib.ml_line_crossing_density.model_utils import backwarp
 
 import math
 
-try:
-    from .correlation import correlation # the custom cost volume layer
-except:
-    sys.path.insert(0, './correlation'); import correlation # you should consider upgrading python
+from eelib.ml_line_crossing_density.correlation import correlation # the custom cost volume layer
 
 class DecoderCustomSmall(torch.nn.Module):
     def __init__(self, level, input_features, prev_features=0, output_features=-1):

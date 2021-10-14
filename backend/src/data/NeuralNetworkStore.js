@@ -69,7 +69,6 @@ const getNeuralNetworks = (db) => async () => {
       FROM neural_networks
       JOIN neural_network_type
         ON neural_network_type.id = neural_networks.nn_type_id
-      WHERE neural_networks.hidden_to_user = false
     `
     const res = await db.query(query)
     return res.rows

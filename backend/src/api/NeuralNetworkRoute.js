@@ -184,6 +184,35 @@ const getModel = (nnStore) => async (req, res) => {
   }
 }
 
+const deleteModel = (nnStore, staticFileService) => async (req, res) => {
+  try {
+    const model = await nnStore.getModelById(req.params.id)
+
+    if (model === null) {
+      return res.sendStatus(404).end()
+    }
+
+    await nnStore.deleteSelectedLabels(model.id)
+    const success = await nnStore.deleteModelById(model.id)
+
+    // Model might be used by streaming instance, in that case it can't be deleted
+    if (success) {
+      try {
+        await staticFileService.deleteFile(model.path)
+      } catch(e) {
+        console.error(e)
+      }
+    } else {
+      console.log('Model not deleted because of reference')
+    }
+
+    return res.sendStatus(204).end()
+  } catch (e) {
+    console.error(e)
+    return res.send(500).end()
+  }
+}
+
 module.exports = (deps) => {
   const router = new Router()
   const neuralNetworkStore = NeuralNetworkStore(deps)
@@ -228,6 +257,11 @@ module.exports = (deps) => {
     '/models/:id',
     checkToken(deps.authService, ['trainer']),
     updateModel(neuralNetworkStore)
+  )
+  router.delete(
+    '/models/:id',
+    checkToken(deps.authService, ['trainer']),
+    deleteModel(neuralNetworkStore, deps.staticFileService)
   )
   router.get(
     '/models/:modelId/tags',

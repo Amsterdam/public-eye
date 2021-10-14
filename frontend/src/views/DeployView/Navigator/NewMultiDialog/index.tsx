@@ -65,7 +65,7 @@ const NewMultiDialog = (props: NewMultiDialogProps): React.ReactElement => {
   const [name, setName] = useState('')
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null)
-  const deploys = useSelector((state: RootState) => state.deploys)
+  const deploys = useSelector((state: RootState) => state.deploys.deploys)
 
   const multiCaptures = useMemo(() => (
     Array.from(deploys.values())

@@ -84,7 +84,7 @@ const CameraForm = ({
   const classes = useStyles()
   const dispatch = useThunkDispatch()
   const streamInstances = useSelector((state: RootState) => (
-    Array.from(state.deploys.values())
+    Array.from(state.deploys.deploys.values())
       .filter(({ job_script_path: jobScriptPath }) => jobScriptPath.includes('stream_capture.py'))
   ))
   const cameras = useSelector((state: RootState) => state.cameras)
@@ -217,7 +217,10 @@ const CameraForm = ({
   }, [setArgs])
 
   const rightColumn = useMemo(() => {
-    if (neuralNetworkType === 'density_estimation') {
+    if (
+      neuralNetworkType === 'density_estimation'
+      || neuralNetworkType === 'density_estimation_transformer'
+    ) {
       return (
         <>
           <div>
@@ -416,9 +419,9 @@ const CameraForm = ({
                 value={args.network}
               >
                 {
-                  neuralNetworks.map(({ id, train_script: scriptName }) => (
+                  neuralNetworks.map(({ id, name, train_script: scriptName }) => (
                     <MenuItem key={id} value={id}>
-                      {scriptName}
+                      {name || scriptName}
                     </MenuItem>
                   ))
                 }

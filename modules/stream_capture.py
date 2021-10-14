@@ -12,7 +12,7 @@ from eelib.websocket import send_websocket_message
 from eelib.config import load
 from eelib.stream.capture import capture_stream
 from eelib.stream.stream_utils import stop_stream
-from eelib.networks.registry import NNRegistry as ModelRegistry
+from eelib.networks.registry import get_network
 from eelib.ml.standard_transform import standard_transform
 from eelib.stream.stream_utils import publish_callback, set_selected_gpu
 
@@ -31,9 +31,11 @@ network must be neural_network id
 model must be model id
 """
 
+
 def sigint_handler(sig, frame):
     print('got sigint. stop input stream')
     stop_stream()
+
 
 def main():
     signal.signal(signal.SIGINT, sigint_handler)
@@ -86,12 +88,11 @@ def main():
     # confusing naming. model, network... phew.. tech debt he
     neural_network_type = store.get_nn_type_by_id(network.nn_type_id)
 
-    cuda_net = ModelRegistry().get_network(
-        network.train_script,
+    cuda_net = get_network(
+        network.name,
         cuda=cuda,
         cuda_device=selected_gpu,
-        model_path=model.path,
-        type=neural_network_type.name)
+        model_path=model.path)
 
     if cuda_net is None:
         print('No registered cuda network code for {}'.format(network.train_script))

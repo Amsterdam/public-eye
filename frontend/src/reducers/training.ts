@@ -15,10 +15,14 @@ import { SET_OR_ADD_MODEL, SetOrAddModel } from 'actions/training/setOrAddModel'
 import { SET_MODEL_TAGS, SetModelTags } from 'actions/training/setModelTags'
 import { ADD_MODEL_TAG, AddModelTag } from 'actions/training/addModelTag'
 import { ADD_TRAINING_RUN, AddTrainingRun } from 'actions/training/addTrainingRun'
+import { SET_CACHED_TRAINING_RUN, SetCachedTrainingRun } from 'actions/training/setCachedTrainingRun'
+import { UPDATE_CACHED_TRAINING_RUN, UpdateCachedTrainingRun } from 'actions/training/updateCachedTrainingRun'
+import { DELETE_MODEL, DeleteModel } from 'actions/training/deleteModel'
 import { Model, TrainingRun, ModelTag } from 'types'
 
 type TrainingReducer = {
   trainingRuns: Map<number, TrainingRun> | null,
+  trainingRunsCache: Map<number, TrainingRun>,
   models: Map<number, Model> | null,
   chartData: (number[] | string[])[],
   viewMode: number,
@@ -27,6 +31,7 @@ type TrainingReducer = {
 
 const defaultState: TrainingReducer = {
   trainingRuns: new Map<number, TrainingRun>(),
+  trainingRunsCache: new Map<number, TrainingRun>(),
   models: new Map<number, Model>(),
   chartData: [],
   viewMode: 0,
@@ -85,6 +90,8 @@ type ReducerAction = (
   | SetOrAddModel
   | SetModelTags
   | AddModelTag
+  | SetCachedTrainingRun
+  | DeleteModel
 )
 
 const addModelTag = (
@@ -122,9 +129,20 @@ const setViewMode = (
   viewMode: action.viewMode,
 })
 
+const isSelectedTrainingRun = (jobId: string | number): boolean => {
+  const urlParts = R.split('/', window.location.pathname)
+
+  return (
+    urlParts.length > 3
+    && urlParts[1] === 'train'
+    && urlParts[2] === 'runs'
+    && numberCompare(urlParts[3], jobId)
+  )
+}
+
 const addChartDataRow = (state: TrainingReducer, action: AddChartDataRow) => ({
   ...state,
-  chartData: numberCompare(action.selectedId, action.jobId)
+  chartData: isSelectedTrainingRun(action.jobId)
     ? R.append(action.row)(state.chartData)
     : state.chartData,
 })
@@ -138,12 +156,29 @@ const deleteTrainingRun = (state: TrainingReducer, action: DeleteTrainingRun) =>
   }
 }
 
+const deleteModel = (state: TrainingReducer, action: DeleteModel) => {
+  state.models.delete(action.id)
+
+  return {
+    ...state,
+    models: new Map(state.models),
+  }
+}
+
 const setOrAddTrainingRun = (
   state: TrainingReducer, action: SetOrAddTrainingRun,
 ): TrainingReducer => ({
   ...state,
   trainingRuns:
     new Map(state.trainingRuns.set(action.trainingRun.job_id, action.trainingRun)),
+})
+
+const setCachedTrainingRun = (
+  state: TrainingReducer, action: SetCachedTrainingRun,
+): TrainingReducer => ({
+  ...state,
+  trainingRunsCache:
+    new Map(state.trainingRunsCache.set(action.trainingRun.job_id, action.trainingRun)),
 })
 
 const updateTrainingRun = (
@@ -155,6 +190,22 @@ const updateTrainingRun = (
       action.jobId,
       {
         ...state.trainingRuns.get(action.jobId),
+        [action.property]: action.value,
+      },
+    ),
+  ),
+})
+
+const updateCachedTrainingRun = (
+  state: TrainingReducer, action: UpdateCachedTrainingRun,
+): TrainingReducer => ({
+  ...state,
+  vv: console.log(action),
+  trainingRunsCache: new Map(
+    state.trainingRunsCache.set(
+      action.jobId,
+      {
+        ...state.trainingRunsCache.get(action.jobId),
         [action.property]: action.value,
       },
     ),
@@ -202,8 +253,14 @@ const reducer = (state = defaultState, action: ReducerAction): TrainingReducer =
       return setOrAddTrainingRun(state, action as SetOrAddTrainingRun)
     case UPDATE_TRAINING_RUN:
       return updateTrainingRun(state, action as UpdateTrainingRun)
+    case UPDATE_CACHED_TRAINING_RUN:
+      return updateCachedTrainingRun(state, action as UpdateCachedTrainingRun)
+    case SET_CACHED_TRAINING_RUN:
+      return setCachedTrainingRun(state, action as SetCachedTrainingRun)
     case SET_CHART_DATA:
       return setChartDate(state, action as SetChartData)
+    case DELETE_MODEL:
+      return deleteModel(state, action as DeleteModel)
     default:
       return state
   }

@@ -66,10 +66,11 @@ const Navigator = (props: NavigatorProps) => {
   const classes = useStyles()
   const dispatch = useThunkDispatch()
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [captureDialogOpen, setCaptureDialogOpen] = useState(false)
   const [multiDialogOpen, setMultiDialogOpen] = useState(false)
   const [selectedJobLoad, setSelectedJobLoad] = useState(null)
   const page = usePage()
-  const deploys = useSelector((state: RootState) => state.deploys)
+  const deploys = useSelector((state: RootState) => state.deploys.deploys)
   const itemsCount = useSelector((state: RootState) => state.pagination.deploys.total)
 
   const scriptNameToIcon = React.useCallback((scriptName: string) => {
@@ -93,7 +94,6 @@ const Navigator = (props: NavigatorProps) => {
       job_script_path: scriptName,
     } = streamInstance
 
-    const multicapture = scriptName.includes('stream_multicapture.py')
     const name = extractDeployName(jobLoad)
 
     const onClick = () => {
@@ -105,12 +105,16 @@ const Navigator = (props: NavigatorProps) => {
     }
 
     const clone = () => {
-      if (multicapture === true) {
+      if (scriptName.includes('stream_multicapture.py')) {
         setMultiDialogOpen(true)
-      } else {
+        setSelectedJobLoad(JSON.parse(jobLoad))
+      } else if (scriptName.includes('stream_capture.py')) {
         setDialogOpen(true)
+        setSelectedJobLoad(JSON.parse(jobLoad))
+      } else if (scriptName.includes('capture_camera.py')) {
+        setCaptureDialogOpen(true)
+        setSelectedJobLoad(JSON.parse(jobLoad))
       }
-      setSelectedJobLoad(JSON.parse(jobLoad))
     }
 
     return {
@@ -158,7 +162,11 @@ const Navigator = (props: NavigatorProps) => {
     <>
       <SideBar>
         <div className={classes.actions}>
-          <CaptureDialog />
+          <CaptureDialog
+            preset={selectedJobLoad}
+            open={captureDialogOpen}
+            setOpen={setCaptureDialogOpen}
+          />
           <Button
             color="primary"
             variant="contained"

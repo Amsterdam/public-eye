@@ -36,14 +36,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const CaptureDialog = () => {
+const CaptureDialog = ({
+  open,
+  setOpen,
+  preset,
+}: {
+  open: boolean,
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  preset: {
+    stream: string,
+    name: string,
+    scale_factor: string,
+    output_fps: string,
+  },
+}) => {
   const classes = useStyles()
   const dispatch = useThunkDispatch()
-  const [open, setOpen] = useState(false)
   const [stream, setStream] = useState('')
   const [name, setName] = useState('')
   const [scaleFactor, setScaleFactor] = useState('')
-  const [inputFps, setInputFps] = useState('')
   const [outputFps, setOutputFps] = useState('')
   const cameras = useSelector((state: RootState) => state.cameras)
 
@@ -52,11 +63,27 @@ const CaptureDialog = () => {
       stream,
       name,
       scale_factor: scaleFactor,
-      input_fps: inputFps,
       output_fps: outputFps,
     }))
     setOpen(false)
-  }, [dispatch, stream, name, scaleFactor, inputFps, outputFps])
+  }, [dispatch, stream, name, scaleFactor, outputFps, setOpen])
+
+  React.useEffect(() => {
+    if (preset) {
+      if (preset.stream) {
+        setStream(preset.stream)
+      }
+      if (preset.name) {
+        setName(preset.name)
+      }
+      if (preset.scale_factor) {
+        setScaleFactor(preset.scale_factor)
+      }
+      if (preset.output_fps) {
+        setOutputFps(preset.output_fps)
+      }
+    }
+  }, [preset])
 
   return (
     <>
@@ -108,15 +135,6 @@ const CaptureDialog = () => {
           </Box>
           <Box paddingTop={1}>
             <TextField
-              label="input fps"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setInputFps(e.target.value)
-              }}
-              value={inputFps}
-            />
-          </Box>
-          <Box paddingTop={1}>
-            <TextField
               label="output fps"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setOutputFps(e.target.value)
@@ -138,7 +156,6 @@ const CaptureDialog = () => {
             disabled={
               name === ''
               || stream === ''
-              || inputFps === ''
             }
           >
             start

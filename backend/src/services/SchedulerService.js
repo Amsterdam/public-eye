@@ -1,19 +1,46 @@
 const JobStore = require('../data/JobStore')
 const process = require('process')
 const fs = require('fs')
-const { spawn, exec } = require('child_process')
+const { spawn, exec, execSync } = require('child_process')
 const os = require('os')
+
 
 const STDERR_PREFIX = '&$'
 const STDOUT_PREFIX = '$&'
 
 const handleOutputLine = (prefix, data) => `${prefix}${data}`.replace(/\n/g, "\\n") + '\n'
 
+const killAndStopWin32 = (pid) => {
+  const root = process.env['EAGLE_EYE_PATH']
+  // on windows, we need to kill the child process
+  const cmd = `${root}/backend/scripts/kill-process.ps1 ${pid}`
+  return execSync(`powershell.exe -c ${cmd}`)
+}
+
+const stopProcess = (pid) => {
+  try {
+    // To-Do: Windows doesn't support signalling. Thats why we kill it the hard way
+    if (os.platform() == "win32") {
+      return killAndStopWin32(pid)
+    } else {
+      return process.kill(pid, 'SIGKILL')
+    }
+  } catch (e) {
+    console.log(`process ${pid} not running`, e)
+    return false
+  }
+}
+
 const killProcess = (pid) => {
   try {
-    process.kill(pid, 'SIGKILL')
+    if (os.platform() == "win32") {
+      return killAndStopWin32(pid)
+    } else {
+      return process.kill(pid, 'SIGINT')
+    }
   } catch (e) {
-    console.log(`process ${pid} not running`)
+    console.log(`process ${pid} not running`, e)
+    return false
   }
 }
 
@@ -26,7 +53,7 @@ const executeJobInBackground = (config, job, logDirectory, io, onStart = async (
     const command = config.command
     let args = []
     if (os.platform() === 'win32') {
-      args = ['-c', `${source_cmd}; python3 -u ${job.job_script_path} ${job.id}`]
+      args = ['-c', `${source_cmd}; python -u ${job.job_script_path} ${job.id}`]
     } else {
       args = ['-c', `${source_cmd} && python3 -u ${job.job_script_path} ${job.id}`]
     }
@@ -166,13 +193,7 @@ const stopJob = ({ db }) => async (jobId) => {
     return false
   }
 
-  try {
-    process.kill(job.pid, 'SIGINT')
-  } catch (e) {
-    console.error(e)
-  }
-
-  return true
+  return stopProcess(job.pid)
 }
 
 const killJob = ({ db }) => async (jobId) => {
@@ -187,7 +208,7 @@ const killJob = ({ db }) => async (jobId) => {
     return false
   }
 
-  killProcess(job.pid)
+  return killProcess(job.pid)
 }
 
 

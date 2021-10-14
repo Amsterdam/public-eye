@@ -5,7 +5,6 @@ from watchdog.observers import Observer
 import cv2
 import time
 import eelib.stream.global_variables as global_variables
-from eelib.websocket import send_websocket_message
 import eelib.store as store
 from eelib.stream.stream_utils import (
     stop_stream,
@@ -27,7 +26,6 @@ def build_ffmpeg_command(
     width,
     fps,
     stream_name,
-    show_heatmap
 ):
     return [
         'ffmpeg',
@@ -87,7 +85,7 @@ class StreamServer:
         width,
         fps,
         name,
-        show_heatmap
+        save_function
     ):
         print(f"Starting stream with resolution {height}x{width}")
         stream_folder = os.path.join(
@@ -102,23 +100,16 @@ class StreamServer:
             width,
             fps,
             stream_name,
-            show_heatmap
         )
         self.restart_timeout = 2
 
-        stream_instance = store.get_stream_instance_by_name(name)
-
-        if stream_instance is not None:
-            def save_function():
-                stream_instance = store.get_stream_instance_by_name(name)
-                store.save_stream_name(stream_instance.id, encoded_file_name)
-                stream_instance = store.get_stream_instance_by_id_as_dict(stream_instance.id)
-                send_websocket_message('stream-instance', 'update', stream_instance)
-
-            observer = Observer()
-            event_handler = EventHandler(observer, stream_name, save_function)
-            observer.schedule(event_handler, stream_folder, recursive=False)
-            observer.start()
+        observer = Observer()
+        event_handler = EventHandler(
+            observer,
+            stream_name,
+            lambda: save_function(name, encoded_file_name))
+        observer.schedule(event_handler, stream_folder, recursive=False)
+        observer.start()
 
     def start_server(self):
         print("starting server")
@@ -152,7 +143,7 @@ def count_video_segment_with_prefix(path, prefix):
 
 
 def save_image_thread(framewriteq, arguments):
-    def start_stream(data, video_number):
+    def start_stream(data, restart_timeout=1):
         camera = store.get_camera_by_stream_url(get_argument(
             data['stream_index'], 'stream', arguments))
         stream_name = get_argument(
@@ -183,31 +174,37 @@ def save_image_thread(framewriteq, arguments):
         ]
         process = subprocess.Popen(
             ffmpeg_command, stdin=subprocess.PIPE, close_fds=True)
-        return process, filename, time.time(), camera
+        return process, filename, time.time(), camera, restart_timeout * 2
 
-    def push_image(process, img):
-        ret2, frame2 = cv2.imencode('.png', img)
+    def finish_video(process, filename, camera):
+        process.stdin.close()
+        print('saving video', filename)
+        video_file_id = store.insert_video_file_if_not_exists(filename)
+        store.insert_video_captured_by_camera(video_file_id, camera.id)
+
+    def finish_videos(ffmpeg_processes):
+        for process, filename, _, camera, _ in ffmpeg_processes.values():
+            finish_video(process, filename, camera)
+
+    def push_image(process_data, data):
+        process, filename, _, camera, restart_timeout = process_data
+        ret2, frame2 = cv2.imencode('.png', data['frame'])
         try:
             if global_variables.g_run_capture:
                 process.stdin.write(frame2.tobytes())
         except Exception as e:
             print(e)
+            finish_video(process, filename, camera)
             if global_variables.g_run_capture:
-                process.stdin.close()
-                process.wait()
+                print('Something went wrong communicating with FFMPEG... restarting FFMPEG in {0} seconds'.format(restart_timeout))
+
+                time.sleep(restart_timeout)
+                ffmpeg_processes[data['stream_index']] = start_stream(
+                    data, restart_timeout)
 
     ffmpeg_processes = {}
 
-    def finish_video(ffmpeg_processes):
-        for process, filename, _, camera in ffmpeg_processes.values():
-            process.stdin.close()
-            print('saving video', filename)
-            video_file_id = store.insert_video_file_if_not_exists(filename)
-            store.insert_video_captured_by_camera(video_file_id, camera.id)
-
     try:
-        video_number = 0
-
         while global_variables.g_run_capture:
             data = framewriteq.get(block=True)
             if data is None or global_variables.g_run_capture is False:
@@ -215,27 +212,22 @@ def save_image_thread(framewriteq, arguments):
                 break
 
             if data['frame_num'] == 0:
-                process, filename, start_time, camera = start_stream(
-                    data, video_number)
-                ffmpeg_processes[data['stream_index']] = (
-                    process, filename, start_time, camera)
+                ffmpeg_processes[data['stream_index']] = start_stream(
+                    data)
 
             start_time = ffmpeg_processes[data['stream_index']][2]
             if time.time() - start_time > MAXIMUM_SECONDS_VIDEO:
                 finish_video(ffmpeg_processes)
-                video_number += 1
-                process, filename, start_time, camera = start_stream(
-                    data, video_number)
-                ffmpeg_processes[data['stream_index']] = (
-                    process, filename, start_time, camera)
+                ffmpeg_processes[data['stream_index']] = start_stream(
+                    data)
 
             push_image(
-                ffmpeg_processes[data['stream_index']][0],
-                data['frame'])
+                ffmpeg_processes[data['stream_index']],
+                data)
 
     except Exception as e:
         print("Exiting because of error save image thread:", e)
     finally:
         print('closing ')
-        finish_video(ffmpeg_processes)
+        finish_videos(ffmpeg_processes)
         stop_stream()

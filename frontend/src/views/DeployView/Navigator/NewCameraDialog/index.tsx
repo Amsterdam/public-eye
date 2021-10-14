@@ -69,7 +69,7 @@ const NewCameraDialog = (props: NewCameraDialogProps) => {
   const dispatch = useDispatch()
   const classes = useStyles()
   const streamInstances = useSelector((state: RootState) => (
-    Array.from(state.deploys.values())
+    Array.from(state.deploys.deploys.values())
       .filter(({ job_script_path: jobScriptPath }) => jobScriptPath.includes('stream_capture.py'))
   ))
 

@@ -1,10 +1,8 @@
 import React, {
   useEffect, useState, useCallback, useMemo,
 } from 'react'
-import {
-  isEmpty,
-} from 'ramda'
 import { useHistory } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import { useThunkDispatch } from 'store'
 import LogViewer from 'common/LogViewer'
 import stopJob from 'thunks/jobs/stopJob'
@@ -18,6 +16,7 @@ import EmptyFallbackElement from 'common/EmptyFallbackElement'
 import { useSelectedId } from 'utils'
 import InfoMarkdown from 'common/InfoMarkdown'
 import getTrainingRunByJobId from 'thunks/training/getTrainingRunByJobId'
+import { RootState } from 'reducers'
 import LossChart from './LossChart'
 import TrainConfig from '../../TrainConfig'
 import ScoreCard from '../../ScoreCard'
@@ -67,16 +66,12 @@ const InfoViewFab = ({ trainingRun }: { trainingRun: TrainingRun }) => {
 
 const useTrainingRun = (runId: string | null): TrainingRun | undefined => {
   const dispatch = useThunkDispatch()
-  const [trainingRun, setTrainingRun] = React.useState<TrainingRun | undefined>(undefined)
+  const trainingRun = useSelector((state: RootState) => (
+    state.training.trainingRunsCache.get(Number(runId))))
 
   React.useEffect(() => {
     if (runId) {
       dispatch(getTrainingRunByJobId(Number(runId)))
-        .then((result) => {
-          if (result) {
-            setTrainingRun(result)
-          }
-        })
     }
   }, [runId, dispatch])
 

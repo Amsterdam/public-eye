@@ -20,7 +20,7 @@ type GeneralReducer = {
 }
 
 const defaultState: GeneralReducer = {
-  baseUrl: process.env.REACT_APP_HOST_LOCATION || window.location.origin,
+  baseUrl: process.env.REACT_APP_HOST_LOCATION || `${window.location.origin}/api`,
   websocketUrl: process.env.REACT_APP_WEBSOCKET_LOCATION || window.location.origin,
   info: {
     open: false,

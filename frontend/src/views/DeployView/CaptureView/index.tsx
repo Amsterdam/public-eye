@@ -9,6 +9,7 @@ import JobActionButton from 'common/JobActionButton'
 import LogViewer from 'common/LogViewer'
 import stopJob from 'thunks/jobs/stopJob'
 import deleteDeploy from 'thunks/deploys/deleteDeploy'
+import StreamPlayer from '../StreamInstanceView/StreamPlayer'
 
 const CaptureView = ({
   capture,
@@ -36,11 +37,12 @@ const CaptureView = ({
   return (
     <ContentContainer>
       <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        flexGrow={1}
+        width="85%"
       >
+        {
+          capture.job_status === 'running'
+          && <StreamPlayer url={capture.output_stream_path} />
+        }
         <LogViewer
           jobId={capture.id}
           jobStatus={capture.job_status}

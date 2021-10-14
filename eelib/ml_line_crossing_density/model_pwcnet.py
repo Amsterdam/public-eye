@@ -6,10 +6,7 @@ from eelib.ml_line_crossing_density.model_utils import backwarp
 
 # https://github.com/sniklaus/pytorch-pwc
 
-try:
-    from .correlation import correlation # the custom cost volume layer
-except:
-    sys.path.insert(0, './correlation'); import correlation # you should consider upgrading python
+from eelib.ml_line_crossing_density.correlation import correlation # the custom cost volume layer
 
 class Extractor(torch.nn.Module):
     def __init__(self):

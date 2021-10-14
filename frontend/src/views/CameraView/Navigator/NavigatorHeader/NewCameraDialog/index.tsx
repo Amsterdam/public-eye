@@ -40,6 +40,7 @@ const NewCameraDialog = (props: NewCameraDialogProps): React.ReactElement => {
     geo_long: '',
     geo_lat: '',
     fps: '24',
+    area_size_m2: '',
   })
 
   const changeHandler = (prop: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,6 +119,14 @@ const NewCameraDialog = (props: NewCameraDialogProps): React.ReactElement => {
             className={classes.textField}
             value={editedCamera.fps || ''}
             onChange={changeHandler('fps')}
+          />
+        </div>
+        <div>
+          <TextField
+            label="area size m2"
+            className={classes.textField}
+            value={editedCamera.area_size_m2 || ''}
+            onChange={changeHandler('area_size_m2')}
           />
         </div>
       </DialogContent>

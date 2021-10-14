@@ -27,7 +27,10 @@ const LossChart = (props: LossChartProps) => {
     dispatch(getTrainingLog(runId))
   }, [runId, dispatch, jobStatus])
 
-  if (nnType === 'density_estimation') {
+  if (
+    nnType === 'density_estimation'
+    || nnType === 'density_estimation_transformer'
+  ) {
     return <DensityLossChart logData={logData} />
   }
 

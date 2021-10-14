@@ -149,7 +149,7 @@ const getTrainingRunByJobId = (db) => async (id) => {
       LEFT JOIN neural_networks ON training_runs.neural_network_id = neural_networks.id
       LEFT JOIN neural_network_type ON neural_network_type.id = neural_networks.nn_type_id
       JOIN jobs ON training_runs.job_id = jobs.id
-      WHERE job_id = $1`
+      WHERE training_runs.job_id = $1`
     const res = await db.query(query, [id])
 
     return res.rows[0] || null

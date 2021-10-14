@@ -52,6 +52,21 @@ const deleteDeploy = (deployStore, jobStore) => async (req, res) => {
   }
 }
 
+const getDeployById = (deployStore) => async (req, res) => {
+  try {
+    const deploy = await deployStore.getDeployByJobId(req.params.id)
+
+    if (deploy === null) {
+      return res.sendStatus(404).end()
+    }
+
+    res.send(deploy).end()
+  } catch (e) {
+    console.error(e)
+    res.sendStatus(500).end()
+  }
+}
+
 module.exports = (deps) => {
 
   const router = new Router()
@@ -64,6 +79,11 @@ module.exports = (deps) => {
     '/',
     checkToken(deps.authService, ['deployer']),
     getDeploys(deps.authService, userStore, deployStore)
+  )
+  router.get(
+    '/:id',
+    checkToken(deps.authService, ['deployer']),
+    getDeployById(deployStore)
   )
   router.delete(
     '/:id',

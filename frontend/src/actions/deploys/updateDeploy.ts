@@ -8,11 +8,14 @@ export type UpdateDeploy = {
 
 const updateDeploy = (
   id: number, property: string, value: number | string,
-): UpdateDeploy => ({
-  type: UPDATE_DEPLOY,
-  id,
-  property,
-  value,
-})
+): UpdateDeploy => {
+  console.log(id, property, value)
+  return {
+    type: UPDATE_DEPLOY,
+    id,
+    property,
+    value,
+  }
+}
 
 export default updateDeploy

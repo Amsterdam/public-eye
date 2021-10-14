@@ -186,6 +186,7 @@ def predict_consumer_thread_lc_density(
                 outputq.put_nowait(None)
                 break
 
+            print(data['frame_num'])
             # initialize       
             if data['frame_num'] == 0:
                 print("Initialize LOI")

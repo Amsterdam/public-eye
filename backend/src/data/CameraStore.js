@@ -14,7 +14,20 @@ const updateCamera = (db) => async (id, { name, stream_url, azimuth, supplier, g
   try {
     const query = 'UPDATE camera SET stream_url = $2, azimuth = $3, supplier = $4, geo_long = $5, geo_lat = $6, name = $7, fps = $8, area_size_m2 = $9 WHERE id = $1 RETURNING *'
 
-    const res = await db.query(query, [id, stream_url, azimuth, supplier, geo_long, geo_lat, name, fps, area_size_m2])
+    const res = await db.query(
+      query,
+      [
+        id,
+        stream_url,
+        azimuth,
+        supplier,
+        geo_long,
+        geo_lat,
+        name,
+        fps,
+        area_size_m2 || null,
+      ],
+    )
     return res.rows[0] || null
   } catch (e) {
     console.error(e)
@@ -34,11 +47,21 @@ const getStreamCapture = (db) => async (cameraId) => {
   }
 }
 
-const insertCamera = (db) => async ({ name, stream_url, azimuth, supplier, geo_long, geo_lat, fps }) => {
+const insertCamera = (db) => async ({ name, stream_url, azimuth, supplier, geo_long, geo_lat, fps, area_size_m2 }) => {
   try {
-    const query = 'INSERT INTO camera (name, stream_url, azimuth, supplier, geo_long, geo_lat, fps) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *'
+    const query = 'INSERT INTO camera (name, stream_url, azimuth, supplier, geo_long, geo_lat, fps, area_size_m2) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *'
 
-    const res = await db.query(query, [name, stream_url, azimuth, supplier, geo_long, geo_lat, fps])
+    const res = await db.query(
+      query, [
+        name,
+        stream_url,
+        azimuth,
+        supplier,
+        geo_long, 
+        geo_lat,
+        fps,
+        area_size_m2 || null,
+      ])
     return res.rows[0] || null
   } catch (e) {
     console.error(e)

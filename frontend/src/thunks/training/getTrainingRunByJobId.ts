@@ -1,5 +1,6 @@
 import { getToken, fetchJson, StatusError } from 'utils'
 import setInfo from 'actions/general/setInfo'
+import setCachedTrainingRun from 'actions/training/setCachedTrainingRun'
 import { TrainingRun } from 'types'
 import { AppThunk } from 'store'
 
@@ -10,7 +11,10 @@ const getTrainingRunByJobId = (
     const token = getToken()
     const { baseUrl } = getState().general
 
-    return await fetchJson(`${baseUrl}/training_runs/${jobId}?tk=${token}`)
+    const result = await fetchJson(`${baseUrl}/training_runs/${jobId}?tk=${token}`)
+    dispatch(setCachedTrainingRun(result as TrainingRun))
+
+    return result
   } catch (e) {
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to get training runs', 'error'))

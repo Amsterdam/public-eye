@@ -15,7 +15,7 @@ const DensityLossChart = ({ logData }: DensityLossChartProps): React.ReactNode =
       logData,
       [
         { key: 'mae', title: 'Val MAE' },
-        { key: 'loss', title: 'Train MAE' },
+        { key: 'avg_loss', title: 'Train MAE' },
       ],
     )
   ), [logData])

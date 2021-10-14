@@ -2,15 +2,14 @@ import React, {
   useEffect,
   useMemo,
   memo,
-  useCallback,
 } from 'react'
 import { useHistory } from 'react-router-dom'
-import * as R from 'ramda'
 import { Box, makeStyles } from '@material-ui/core'
 import { useSelector } from 'react-redux'
 import { useThunkDispatch } from 'store'
 import getAllCameras from 'thunks/cameras/getAllCameras'
 import getDeploys from 'thunks/deploys/getDeploys'
+import getDeployByJobId from 'thunks/deploys/getDeployByJobId'
 import PageContainer from 'common/PageContainer'
 import ContentContainer from 'common/ContentContainer'
 import InfoMarkdown from 'common/InfoMarkdown'
@@ -50,25 +49,35 @@ const DeployBody = ({
   return ''
 }
 
+const useDeploy = (id: string | null): Deploy | undefined => {
+  const dispatch = useThunkDispatch()
+  const deploy = useSelector((state: RootState) => (
+    state.deploys.deployCache[Number(id)]))
+
+  React.useEffect(() => {
+    if (id) {
+      dispatch(getDeployByJobId(Number(id)))
+    }
+  }, [id, dispatch])
+
+  return deploy
+}
+
 const DeployView = () => {
   const classes = useStyles()
-  const history = useHistory()
   const dispatch = useThunkDispatch()
   const selectedIndex = useSelectedId(['/deploy/:id'])
-  const deploys = useSelector((state: RootState) => state.deploys)
 
   useEffect(() => {
     dispatch(getAllCameras())
     dispatch(getDeploys())
   }, [dispatch])
 
-  const deploy = useMemo(
-    () => deploys.get(Number(selectedIndex)) || null, [selectedIndex, deploys],
-  )
+  const deploy = useDeploy(selectedIndex)
 
   const predictionView = useMemo(() => (
     <EmptyFallbackElement
-      isEmpty={deploy === null}
+      isEmpty={deploy === undefined}
       fallbackElement={<InfoMarkdown file="/markdowns/deploy.md" />}
     >
       <DeployBody deploy={deploy} />

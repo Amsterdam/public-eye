@@ -30,7 +30,7 @@ We will now create a virtual Python environment which will be used by Eagle Eye.
 - `cd $EAGLE_EYE_PATH`
 - `virtualenv --python=/usr/bin/python3 eagle_eye_p3`
 - `source eagle_eye_p3/bin/activate`
-- `pip install postgres==3.0.0 torch==1.6.0 Pillow scipy opencv-python matplotlib torchvision==0.7.0 tqdm h5py jupyter imageio watchdog requests wget pyyaml psutil cupy==7.6`
+- `pip install postgres==3.0.0 torch==1.6.0 Pillow scipy opencv-python matplotlib torchvision==0.7.0 tqdm h5py jupyter imageio watchdog requests wget pyyaml psutil pandas timm scikit-image easydict cupy-cuda104 scikit-image easydict'
 - `deactivate`
 
 By default, this environment is used by the node backend of Eagle Eye. We can activate this virtual environment manually for testing purposes by running `source eagle_eye_p3/bin/activate` in the EAGLE_EYE_PATH directory.
@@ -74,7 +74,7 @@ Lastly, torch and torchvision must be installed according to pytorch.org. `pip i
 - `GRANT ALL PRIVILEGES ON DATABASE eagle_eye TO username;`  # Replace the word "**username**" with your actual linux username.
 - `\q`
 - `exit`
-- cd `$EAGLE_EYE_PATH/install/migrations`
+- cd `$EAGLE_EYE_PATH/install`
 - `psql -d eagle_eye < 0-postgres_init.sql`
 - `psql -d eagle_eye < 1-migration.sql`
 - (if there are any addition x-migration.sql files, then also perform the same commands for them as above in a CONESECUTIVE order (based on their numbers)).

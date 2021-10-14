@@ -8,13 +8,18 @@ from eelib.stream.stream_utils import (
     output_consumer_loop,
     rescale_output,
     set_selected_gpu,
-    stop_stream
+    stop_stream,
+    create_heatmap
 )
 import PIL.Image as Image
 import cv2
 from eelib.ml.average_meter import AverageMeter
 from eelib.ml.sliding_window import SlidingWindow
 from eelib.ml.polygon_mask import polygon_mask
+from eelib.networks.Transformer.datasets.dataset_utils import (
+    img_equal_split,
+    img_equal_unsplit
+)
 
 
 @output_consumer_loop
@@ -93,7 +98,10 @@ def predict_density(
     if area_points:
         image_with_mask, image, mask = polygon_mask(image, area_points)
 
-    img = transformFn(Image.fromarray(image))
+    img = Image.fromarray(image)
+    #print('save image')
+    #img.save("/home/publiceye/extract-csr.jpg")
+    img = transformFn(img)
 
     if cuda:
         img = img.cuda()
@@ -115,70 +123,145 @@ def predict_density(
     return count, output, image_with_mask
 
 
-def predict_consumer_thread_density(
-    predictq,
-    outputq,
+def predict_density_transformer(
+    image,
+    network,
     transformFn,
-    arguments,
-    get_model,
-    get_area_points
+    cuda,
+    density_bias,
+    area_points
 ):
-    try:
-        predictions = AverageMeter()
-        while global_variables.g_run_capture:
-            data = predictq.get(block=True)
-            if data is None or global_variables.g_run_capture is False:
-                print("stop predict consumer thread")
-                outputq.put_nowait(None)
-                break
+    # All Parameters are hardcoded now,
+    # they should be saved together with model somehow
+    image_with_mask = None
+    if area_points:
+        image_with_mask, image, mask = polygon_mask(image, area_points)
 
-            set_selected_gpu(
-                get_argument(data['stream_index'], 'selected_gpu', arguments),
-                get_argument(data['stream_index'], 'cuda', arguments))
+    img = Image.fromarray(image)
+    #print('save image')
+    #img.save("/home/publiceye/extract.jpg")
+    img = transformFn(img)
+    img_stack = img_equal_split(img, 224, 8)
+    img_stack = img_stack.squeeze(0)
+    if cuda:
+        img_stack = img_stack.cuda()
 
-            # initialize
-            if data['frame_num'] == 0:
-                count_sliding_window = SlidingWindow(
-                    get_argument(
-                        data['stream_index'],
-                        'sliding_window',
-                        arguments
+    pred_den = network(img_stack)
+    pred_den = pred_den.cpu()
+
+    img_h, img_w, _ = image.shape
+
+    den = img_equal_unsplit(
+        pred_den,
+        8,
+        4,
+        img_h,
+        img_w,
+        1
+    )
+
+    output = den.squeeze(0)
+    output = output.detach().cpu().numpy()
+
+    if density_bias:
+        count = max(0, (output.sum() / 3000) - density_bias)
+    else:
+        count = output.sum() / 3000
+
+    output = cv2.resize(np.float32(output), (img_w, img_h))
+
+    #heatmap = create_heatmap(output)
+    #heatmap = Image.fromarray(heatmap)
+    #heatmap.save('/home/publiceye/dens.jpg')
+
+    if area_points:
+        output = np.multiply(output, mask)
+
+    return count, output, image_with_mask
+
+
+def predict_consumer_thread_density(
+    use_transformer=False
+):
+    def predict(
+        predictq,
+        outputq,
+        transformFn,
+        arguments,
+        get_model,
+        get_area_points
+    ):
+        try:
+            predictions = AverageMeter()
+            while global_variables.g_run_capture:
+                data = predictq.get(block=True)
+                if data is None or global_variables.g_run_capture is False:
+                    print("stop predict consumer thread")
+                    outputq.put_nowait(None)
+                    break
+
+                set_selected_gpu(
+                    get_argument(data['stream_index'], 'selected_gpu',
+                                 arguments),
+                    get_argument(data['stream_index'], 'cuda', arguments))
+
+                # initialize
+                if data['frame_num'] == 0:
+                    count_sliding_window = SlidingWindow(
+                        get_argument(
+                            data['stream_index'],
+                            'sliding_window',
+                            arguments
+                        )
                     )
-                )
 
-            model = get_model(data['stream_index'])
-            area_points = get_area_points(data['stream_index'])
-            count, dens_map, image_with_mask = predict_density(
-                data['frame'],
-                model,
-                transformFn,
-                get_argument(data['stream_index'], 'cuda', arguments),
-                get_argument(data['stream_index'], 'bias', arguments),
-                area_points)
+                model = get_model(data['stream_index'])
+                area_points = get_area_points(data['stream_index'])
 
-            predictions.update(count)
-            count_sliding_window.update(count)
+                if use_transformer:
+                    count, dens_map, image_with_mask = predict_density_transformer(
+                        data['frame'],
+                        model,
+                        transformFn,
+                        get_argument(data['stream_index'], 'cuda', arguments),
+                        get_argument(data['stream_index'], 'bias', arguments),
+                        area_points
+                    )
+                else:
+                    count, dens_map, image_with_mask = predict_density(
+                        data['frame'],
+                        model,
+                        transformFn,
+                        get_argument(data['stream_index'], 'cuda', arguments),
+                        get_argument(data['stream_index'], 'bias', arguments),
+                        area_points
+                    )
 
-            print("predict {} -> {} ({})".format(
-                data['frame_num'], count, predictions.avg), data['url'])
+                predictions.update(count)
+                count_sliding_window.update(count)
 
-            outputq.put_nowait({
-                'image_with_mask': (
-                    None if image_with_mask is None
-                    else Image.fromarray(image_with_mask)
-                ),
-                'frame_num': data['frame_num'],
-                'frame': data['frame'],
-                'image': data['image'],
-                'stream_name': data['stream_name'],
-                'count': count_sliding_window.get(),
-                'run_avg_count': predictions.avg,
-                'density_map': dens_map,
-                'url': data['url'],
-                'model_name': data['model_name'],
-                'stream_index': data['stream_index']
-            })
-    except Exception as e:
-        print("Exiting because of error predict thread:", e)
-        stop_stream()
-        outputq.put_nowait(None)
+                print("predict {} -> {} ({})".format(
+                    data['frame_num'], count, predictions.avg), data['url'])
+
+                outputq.put_nowait({
+                    'image_with_mask': (
+                        None if image_with_mask is None
+                        else Image.fromarray(image_with_mask)
+                    ),
+                    'frame_num': data['frame_num'],
+                    'frame': data['frame'],
+                    'image': data['image'],
+                    'stream_name': data['stream_name'],
+                    'count': count_sliding_window.get(),
+                    'run_avg_count': predictions.avg,
+                    'density_map': dens_map,
+                    'url': data['url'],
+                    'model_name': data['model_name'],
+                    'stream_index': data['stream_index']
+                })
+        except Exception as e:
+            print("Exiting because of error predict thread: ", e)
+            stop_stream()
+            outputq.put_nowait(None)
+
+    return predict

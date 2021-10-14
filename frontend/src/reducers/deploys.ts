@@ -5,9 +5,13 @@ import { SET_DEPLOY, SetDeploy } from 'actions/deploys/setDeploy'
 import { ADD_DEPLOY, AddDeploy } from 'actions/deploys/addDeploy'
 import { UPDATE_DEPLOY, UpdateDeploy } from 'actions/deploys/updateDeploy'
 import { DELETE_DEPLOY, DeleteDeploy } from 'actions/deploys/deleteDeploy'
+import { SET_OR_ADD_CACHED_DEPLOY, SetOrAddCachedDeploy } from 'actions/deploys/setOrAddCachedDeploy'
 import { RESET_STATE, ResetStateAction } from 'actions/general/resetState'
 
-type DeploysReducer = Map<number, Deploy>
+type DeploysReducer = {
+  deploys: Map<number, Deploy>,
+  deployCache: Record<number, Deploy>,
+}
 
 type ReducerAction = (
   SetDeploys
@@ -18,7 +22,10 @@ type ReducerAction = (
   | DeleteDeploy
 )
 
-const defaultState = new Map<number, Deploy>()
+const defaultState = {
+  deploys: new Map<number, Deploy>(),
+  deployCache: {},
+}
 
 const setDeploys = (
   state: DeploysReducer, action: SetDeploys,
@@ -29,49 +36,79 @@ const setDeploys = (
     newDeploys.set(deploy.id, deploy)
   })
 
-  return newDeploys
+  return {
+    ...state,
+    deploys: newDeploys,
+  }
 }
 
 const setDeploy = (
   state: DeploysReducer, action: SetDeploy,
-): DeploysReducer => (
-  new Map(state.set(action.deploy.id, action.deploy))
-)
+): DeploysReducer => ({
+  ...state,
+  deploys: new Map(state.deploys.set(action.deploy.id, action.deploy)),
+})
 
 const addDeploy = (
   state: DeploysReducer, action: AddDeploy,
-) => (
-  new Map(prepend([action.deploy.id, action.deploy])(Array.from(state.entries())))
-)
+) => ({
+  ...state,
+  deploys: new Map(prepend([action.deploy.id, action.deploy])(Array.from(state.deploys.entries()))),
+})
 
 const updateDeploy = (
   state: DeploysReducer, action: UpdateDeploy,
 ): DeploysReducer => {
-  const deploy = state.get(action.id)
+  const deploy = state.deploys.get(action.id)
 
   if (!deploy) {
     return state
   }
 
-  return new Map(
-    state.set(
-      action.id,
-      {
-        ...deploy,
-        [action.property]: action.value,
-      },
+  return {
+    deployCache: state.deployCache[action.id]
+      ? ({
+        ...state.deployCache,
+        [action.id]: {
+          ...state.deployCache[action.id],
+          [action.property]: action.value,
+        },
+      }) : state.deployCache,
+    deploys: new Map(
+      state.deploys.set(
+        action.id,
+        {
+          ...deploy,
+          [action.property]: action.value,
+        },
+      ),
     ),
-  )
+
+  }
 }
 
 const deleteDeploy = (
   state: DeploysReducer,
   action: DeleteDeploy,
 ) => {
-  state.delete(action.id)
+  state.deploys.delete(action.id)
 
-  return new Map(state)
+  return {
+    ...state,
+    deploys: new Map(state.deploys),
+  }
 }
+
+const setOrAddCachedDeploy = (
+  state: DeploysReducer,
+  action: SetOrAddCachedDeploy,
+) => ({
+  ...state,
+  deployCache: {
+    ...state.deployCache,
+    [action.deploy.id]: action.deploy,
+  },
+})
 
 const reducer = (
   state: DeploysReducer = defaultState,
@@ -90,6 +127,8 @@ const reducer = (
       return addDeploy(state, action as AddDeploy)
     case UPDATE_DEPLOY:
       return updateDeploy(state, action as UpdateDeploy)
+    case SET_OR_ADD_CACHED_DEPLOY:
+      return setOrAddCachedDeploy(state, action as SetOrAddCachedDeploy)
     default:
       return state
   }

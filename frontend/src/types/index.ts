@@ -5,11 +5,16 @@ export type ChartDataRow = Record<string, number>
 export type UserRole = { id: number, name: string }
 
 /* database types */
+export type VideoCapture = {
+  output_stream_path: string,
+  running_job_id: number,
+}
+
 export type Collection = {
   collection_id: number,
   frame_count: string,
   frame_locked_count: string,
-  id: 1,
+  id: number,
   name: string,
 }
 

@@ -1,3 +1,30 @@
+const getDeployByJobId = (db) => async (id) => {
+  try {
+    const query = `
+      SELECT *, jobs.id as id FROM jobs
+      LEFT JOIN multicapture_stream
+        ON multicapture_stream.running_job_id = jobs.id
+      LEFT JOIN video_capture
+        ON video_capture.running_job_id = jobs.id
+      LEFT JOIN stream_instance
+        ON stream_instance.running_job_id = jobs.id
+
+      WHERE (
+        jobs.id = $1 AND (
+          jobs.job_script_path LIKE '%capture_camera%'
+          OR jobs.job_script_path LIKE '%stream_multicapture.py%'
+          OR jobs.job_script_path LIKE '%stream_capture.py%'
+        )
+      )
+    `
+    const res = await db.query(query, [id])
+
+    return res.rows[0] || null
+  } catch(e) {
+    return null
+  }
+}
+
 const getDeploys = (db) => async (skip, limit) => {
   try {
     let query = `
@@ -6,6 +33,8 @@ const getDeploys = (db) => async (skip, limit) => {
         ON stream_instance.running_job_id = jobs.id
       LEFT JOIN multicapture_stream
         ON multicapture_stream.running_job_id = jobs.id
+      LEFT JOIN video_capture
+        ON video_capture.running_job_id = jobs.id
 
       WHERE (
         jobs.job_script_path LIKE '%capture_camera%'
@@ -163,6 +192,7 @@ const getMultiCaptureByJobId = (db) => async (id) => {
 }
 
 const DatasetStore = ({ db }) => ({
+  getDeployByJobId: getDeployByJobId(db),
   getTotalDeploysCount: getTotalDeploysCount(db),
   getTotalDeploysCountByUserId: getTotalDeploysCountByUserId(db),
   getDeploysByUserId: getDeploysByUserId(db),

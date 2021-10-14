@@ -1,6 +1,70 @@
 import eelib.postgres as pg
 
 
+def update_video_capture_stream_path(job_id, output_stream_path):
+    query = """
+        UPDATE video_capture
+        SET output_stream_path = %(osp)s
+        WHERE running_job_id = %(jid)s
+    """
+    with pg.get_cursor() as cursor:
+        cursor.run(
+            query,
+            {
+                'osp': output_stream_path,
+                'jid': job_id
+            }
+        )
+
+
+def get_video_capture_by_name(name):
+    query = """
+        SELECT * FROM video_capture
+        WHERE name = %(name)s
+    """
+    with pg.get_cursor() as cursor:
+        return cursor.one(
+            query,
+            {
+                'name': name
+            }
+        )
+
+
+def get_video_capture_with_job_by_job_id_as_dict(job_id):
+    query = """
+        SELECT * FROM jobs
+        JOIN video_capture
+            ON video_capture.running_job_id = jobs.id
+        WHERE jobs.id = %(jid)s
+    """
+    with pg.get_cursor() as cursor:
+        return cursor.one(
+            query,
+            {
+                'jid': job_id,
+            },
+            back_as=dict
+        )
+
+
+def insert_video_capture(job_id, name, camera_id):
+    query = """
+        INSERT INTO video_capture (running_job_id, name, camera_id)
+        VALUES (%(jid)s, %(name)s, %(cid)s)
+        RETURNING *
+    """
+    with pg.get_cursor() as cursor:
+        return cursor.one(
+            query,
+            {
+                'jid': job_id,
+                'name': name,
+                'cid': camera_id
+            }
+        )
+
+
 def insert_video_captured_by_camera(video_file_id, camera_id):
     query = """
         INSERT INTO video_captured_by_camera (camera_id, video_file_id)
@@ -425,6 +489,7 @@ def get_multi_capture_by_job_id_as_dict(job_id):
             back_as=dict
         )
 
+
 def update_stream_instance_stream_path(id, output_stream_path):
     with pg.get_cursor() as cursor:
         cursor.run(
@@ -434,6 +499,7 @@ def update_stream_instance_stream_path(id, output_stream_path):
                 'id': id
             }
         )
+
 
 def get_stream_instance_by_job_id(id):
     with pg.get_cursor() as cursor:
@@ -896,6 +962,13 @@ def get_groundtruths_for_dataset(dataset_id):
 def get_training_run_by_job_id(job_id):
     with pg.get_cursor() as cursor:
         return cursor.one('SELECT * FROM training_runs WHERE job_id = %(job_id)s', { 'job_id': job_id })
+
+def get_neural_network_by_name(name):
+    with pg.get_cursor() as cursor:
+        return cursor.one(
+            'SELECT * FROM neural_networks WHERE name = %(script_name)s',
+            { 'script_name': name }
+        )
 
 def get_neural_network_by_script(script_name):
     with pg.get_cursor() as cursor:

@@ -6,7 +6,6 @@ files/
 .*~
 eagle_eye_p27
 eagle_eye_p3
-*.png
 jupyter_notebook.log
 *.mp4
 *.pyc

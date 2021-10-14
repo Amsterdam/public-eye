@@ -1,17 +1,21 @@
-import glob
 import sys
-import os
 import torch
 import threading
 import queue
 import eelib.store as store
-from eelib.stream.stream_utils import open_capture
-from eelib.stream.stream_utils import frame_consumer_thread
+from eelib.stream.stream_utils import (
+    open_capture,
+    frame_consumer_thread,
+    remove_stream_files
+)
 from eelib.stream.stream_object import predict_consumer_thread_object
 from eelib.stream.stream_object import output_consumer_thread_object
 from eelib.stream.stream_server import save_image_thread
 from eelib.stream.stream_utils import reconnect
-from eelib.stream.stream_density import predict_consumer_thread_density
+from eelib.websocket import send_websocket_message
+from eelib.stream.stream_density import (
+    predict_consumer_thread_density,
+)
 from eelib.stream.stream_density import output_consumer_thread_density
 from eelib.stream.stream_loi_density import predict_consumer_thread_lc_density
 from eelib.stream.stream_loi_density import output_consumer_thread_lc_density
@@ -57,20 +61,6 @@ def run_stream(frameq, cap, url, skip_frames, model_name, stream_name):
                 frameq.put_nowait(None)
         else:
             frameq.put_nowait(None)
-
-
-def remove_stream_files(name):
-    stream_files = glob.glob(os.path.join(
-        os.environ['EAGLE_EYE_PATH'],
-        'files',
-        'streams',
-        '{}*'.format(name)))
-
-    for filename in stream_files:
-        try:
-            os.unlink(filename)
-        except:
-            print('Something went wrong removing file: ', filename)
 
 
 def clean_up_stream_instance(name):
@@ -156,6 +146,18 @@ def capture_stream(
 
     cap, opencv_width, opencv_height, opencv_fps = open_capture(url)
     input_fps = input_fps or opencv_fps
+
+    def save_function(name, encoded_file_name):
+        stream_instance = store.get_stream_instance_by_name(name)
+        if stream_instance is not None:
+            store.save_stream_name(stream_instance.id, encoded_file_name)
+            stream_instance = store.get_stream_instance_by_id_as_dict(
+                stream_instance.id)
+            send_websocket_message(
+                'stream-instance',
+                'update',
+                stream_instance)
+
     stream_server = StreamServer(
        scale_factor,
        output_scale_factor,
@@ -163,7 +165,7 @@ def capture_stream(
        opencv_width,
        output_fps,
        name,
-       show_heatmap
+       save_function
     )
 
     def get_model(stream_index):
@@ -180,18 +182,34 @@ def capture_stream(
         )
         output_consumer = threading.Thread(
             target=output_consumer_thread_object,
-            args=[outputq, framewriteq, stream_server, arguments, on_predict_callback],
+            args=[outputq, framewriteq, stream_server, arguments,
+                  on_predict_callback],
             daemon=True
         )
     elif network_type == 'density_estimation':
         predict_consumer = threading.Thread(
-            target=predict_consumer_thread_density,
-            args=[predictq, outputq, transformFn, arguments, get_model, get_area_points],
+            target=predict_consumer_thread_density(False),
+            args=[predictq, outputq, transformFn, arguments, get_model,
+                  get_area_points],
             daemon=True
         )
         output_consumer = threading.Thread(
             target=output_consumer_thread_density,
-            args=[outputq, framewriteq, stream_server, arguments, on_predict_callback],
+            args=[outputq, framewriteq, stream_server, arguments,
+                  on_predict_callback],
+            daemon=True
+        )
+    elif network_type == 'density_estimation_transformer':
+        predict_consumer = threading.Thread(
+            target=predict_consumer_thread_density(True),
+            args=[predictq, outputq, transformFn, arguments, get_model,
+                  get_area_points],
+            daemon=True
+        )
+        output_consumer = threading.Thread(
+            target=output_consumer_thread_density,
+            args=[outputq, framewriteq, stream_server, arguments,
+                  on_predict_callback],
             daemon=True
         )
     elif network_type == 'line_crossing_density':
@@ -202,7 +220,8 @@ def capture_stream(
         )
         output_consumer = threading.Thread(
             target=output_consumer_thread_lc_density,
-            args=[outputq, framewriteq, stream_server, arguments, on_predict_callback],
+            args=[outputq, framewriteq, stream_server, arguments,
+                  on_predict_callback],
             daemon=True
         )
     else:
@@ -253,45 +272,3 @@ def capture_stream(
     on_predict_callback({ 'event': 'STOP' }, url, model_name)
 
     return 0
-
-
-def main():
-    import argparse
-    torch.cuda.empty_cache()
-
-    parser = argparse.ArgumentParser(description='Start a stream')
-    parser.add_argument('--checkpoint', type=str, help='path to checkpoint for model', required=True)
-    parser.add_argument('--stream', type=str, help='path to stream (e.g. udp://@127.0.0.1:5010)', required=True)
-
-    args = parser.parse_args()
-
-    url = args.stream
-    checkpoint_path = args.checkpoint
-
-    cuda = True
-
-    network = ModelRegistry().get_network('train_yolo.py', model_path=checkpoint_path)
-    if cuda is False:
-        network = network.cpu()
-
-    #capture_object_stream(url, model, 296)
-    rc = capture_stream(
-        url,
-        network,
-        model_id = 56,
-        network_type = 'object_recognition',
-        input_fps = None,
-        output_fps = 1,
-        width = 1920,
-        height = 1080,
-        name = 'cmd_line_test_stream',
-        social_distance = False,
-        transformFn = None,
-        cuda = True
-    )
-
-    print('capture stream finished with rc', rc)
-    return rc
-
-if __name__ == "__main__":
-    sys.exit(main())

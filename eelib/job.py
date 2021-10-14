@@ -138,7 +138,6 @@ def parse_arguments(argument_file):
     with open(os.path.join(os.environ['EAGLE_EYE_PATH'], argument_file)) as f:
         arguments = json.load(f)
 
-    # job_id = get_job_id()
     job_arguments = get_job_args()
     args = {}
 
@@ -156,4 +155,6 @@ def parse_arguments(argument_file):
 
 def get_argument_or_default(arg_name, arg_spec, job_args):
     argument = job_args.get(arg_name)
-    return argument or arg_spec.get('default')
+    if argument is None:
+        return arg_spec.get('default')
+    return argument

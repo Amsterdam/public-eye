@@ -1,14 +1,13 @@
 import React from 'react'
 import { useThunkDispatch } from 'store'
 import { Model } from 'types'
-import {
-  isEmpty,
-} from 'ramda'
 import ContentContainer from 'common/ContentContainer'
 import { useSelectedId } from 'utils'
 import getModelById from 'thunks/training/getModelById'
 import InfoMarkdown from 'common/InfoMarkdown'
 import EmptyFallbackElement from 'common/EmptyFallbackElement'
+import deleteModel from 'thunks/training/deleteModel'
+import JobActionButton from 'common/JobActionButton'
 import TrainConfig from '../../TrainConfig'
 import ScoreCard from '../../ScoreCard'
 import ModelAnnotationEditor from './ModelAnnotationEditor'
@@ -33,8 +32,15 @@ const useModel = (modelId: string | null): Model | undefined => {
 }
 
 const ModelInfoViewer = (): React.ReactElement => {
+  const dispatch = useThunkDispatch()
   const selectedId = useSelectedId(['/train/models/:id'])
   const selectedModel = useModel(selectedId)
+
+  const fabAction = React.useCallback(() => {
+    if (selectedModel) {
+      dispatch(deleteModel(selectedModel.id))
+    }
+  }, [selectedModel, dispatch])
 
   return (
     <ContentContainer>
@@ -65,6 +71,12 @@ const ModelInfoViewer = (): React.ReactElement => {
                   <ScoreCard trainingRunId={selectedModel.train_run_id} />
                 )
               }
+              <JobActionButton
+                fabAction={fabAction}
+                fabTitle="Delete"
+                disabled={false}
+                dialogTitle="Delete model"
+              />
             </>
           )
         }

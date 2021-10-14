@@ -19,9 +19,7 @@ from eelib.stream.stream_density import predict_consumer_thread_density
 from eelib.stream.stream_density import output_consumer_thread_density
 import eelib.store as store
 
-
 FFMPEG_TIMEOUT = 10
-
 
 def kill_child_processes(parent_pid, sig=signal.SIGTERM):
     try:
@@ -55,9 +53,18 @@ def execute_with_timeout(command, timeout):
 def extract_frame(stream_url, resolution):
     width, height = resolution
     print('use timeout')
-    command = ['ffmpeg', '-loglevel', 'quiet', '-y', '-i', stream_url,
-        '-stimeout', str(FFMPEG_TIMEOUT*1000000), '-vframes', '1', '-f',
-        'image2pipe', '-pix_fmt', 'rgb24', '-vcodec', 'rawvideo', '-']
+    command = [
+            'ffmpeg',
+            '-loglevel', 'quiet',
+            '-y',
+            '-rtsp_transport', 'tcp',
+            '-i', stream_url,
+            '-stimeout', str(FFMPEG_TIMEOUT*1000000),
+            '-vframes', '1',
+            '-f', 'image2pipe',
+            '-pix_fmt', 'rgb24',
+            '-vcodec', 'rawvideo',
+            '-']
     ffmpeg_output = execute_with_timeout(command, FFMPEG_TIMEOUT)
     image = np.frombuffer(ffmpeg_output, dtype='uint8').reshape(height, width, 3)
     return image
@@ -95,16 +102,14 @@ def run_multicapture_streams(frameq, arguments):
                         'scale_factor': args['scale_factor'],
                         'stream_name': args['name']
                     })
+                    frame_numbers[stream_index] += 1
                 else:
                     print("no ffmpeg error - but also no frame")
             except ValueError as e:
                 print("extract frame ERROR", e)
-                continue
             except:
                 print("extract frame ERROR", sys.exc_info()[0])
-                continue
 
-            frame_numbers[stream_index] += 1
             end_time = time.time()
             total_time = end_time - start_time
             if total_time < proccess_time_seconds:
@@ -154,7 +159,7 @@ def multicapture_stream(
         )
     elif neural_network_type == 'density_estimation':
         predict_consumer = threading.Thread(
-            target=predict_consumer_thread_density,
+            target=predict_consumer_thread_density(False),
             args=[predictq, outputq, transformFn, arguments, get_model,
                   get_area_points],
             daemon=True
@@ -162,6 +167,19 @@ def multicapture_stream(
         output_consumer = threading.Thread(
             target=output_consumer_thread_density,
             args=[outputq, None, None, arguments, on_predict_callback],
+            daemon=True
+        )
+    elif neural_network_type == 'density_estimation_transformer':
+        predict_consumer = threading.Thread(
+            target=predict_consumer_thread_density(True),
+            args=[predictq, outputq, transformFn, arguments, get_model,
+                  get_area_points],
+            daemon=True
+        )
+        output_consumer = threading.Thread(
+            target=output_consumer_thread_density,
+            args=[outputq, None, None, arguments,
+                  on_predict_callback],
             daemon=True
         )
     else:

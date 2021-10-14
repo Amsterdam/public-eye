@@ -1,4 +1,6 @@
 import sys
+import os
+import glob
 import requests
 from datetime import datetime, timezone
 import cv2
@@ -17,6 +19,20 @@ import eelib.stream.global_variables as global_variables
 MAX_TIMEOUT = 100
 RESTART_MAXIMUM = 2 ** 4
 FFMPEG_TIMEOUT = 10
+
+
+def remove_stream_files(name):
+    stream_files = glob.glob(os.path.join(
+        os.environ['EAGLE_EYE_PATH'],
+        'files',
+        'streams',
+        '{}*'.format(name)))
+
+    for filename in stream_files:
+        try:
+            os.unlink(filename)
+        except Exception:
+            print('Something went wrong removing file: ', filename)
 
 
 def set_selected_gpu(selected_gpu, cuda):

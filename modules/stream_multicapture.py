@@ -7,7 +7,7 @@ import eelib.postgres as pg
 from eelib.stream.multicapture import multicapture_stream
 from eelib.stream.stream_utils import stop_multistream
 import eelib.store as store
-from eelib.networks.registry import NNRegistry as ModelRegistry
+from eelib.networks.registry import get_network
 from eelib.ml.standard_transform import standard_transform
 from eelib.stream.stream_utils import publish_callback, set_selected_gpu
 from eelib.websocket import send_websocket_message
@@ -124,11 +124,10 @@ def main():
 
     set_selected_gpu(args[0].get('selected_gpu'), args[0].get('cuda'))
 
-    cuda_net = ModelRegistry().get_network(
+    cuda_net = get_network(
         network.train_script,
         cuda=args[0]['cuda'],
-        model_path=model.path,
-        type=neural_network_type.name)
+        model_path=model.path)
 
     def get_area_points(stream_index):
         roi_id = args[stream_index].get('roi_id')
@@ -169,9 +168,12 @@ def main():
         model = store.get_model_by_id(model_id)
         cuda = args[stream_index]['cuda']
 
-        nn = ModelRegistry().init_model(
-            cuda_net, model.path, neural_network_type.name, cuda,
-            network_name=network.train_script)
+        nn = get_network(
+            network.name,
+            cuda,
+            model.path,
+            args[stream_index].get('selected_gpu')
+        )
 
         return nn
 

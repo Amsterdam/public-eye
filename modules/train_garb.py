@@ -35,17 +35,15 @@ example
 
 @parse_arguments('modules/train_garb-args.json')
 def main(arguments):
-    def load_model(args):
-        return Darknet(os.environ['EAGLE_EYE_PATH'] + '/eelib/ml_object_recognition/model_configs/yolov3_garb.cfg')
-
-    training_run, model, args = initialize_module(arguments, load_model)
+    training_run, model, args = initialize_module(
+        'Yolo v3 Garbage', arguments)
     train(
         model,
         args,
         training_run.id,
         training_run.log_file_path,
-        "train_garb.py"
+        "Yolo v3 Garbage"
     )
 
-
-main()
+if __name__ == "__main__":
+    main()

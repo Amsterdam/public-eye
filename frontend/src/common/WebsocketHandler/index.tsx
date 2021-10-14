@@ -1,11 +1,14 @@
 import React from 'react'
 import * as R from 'ramda'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch, batch } from 'react-redux'
 import setOrAddTrainingRun from 'actions/training/setOrAddTrainingRun'
+import setOrAddCachedDeploy from 'actions/deploys/setOrAddCachedDeploy'
 import setOrAddJob from 'actions/jobs/setOrAddJob'
 import addChartDataRow from 'actions/training/addChartDataRow'
 import appendLogData from 'actions/jobs/appendLogData'
 import updateTrainingRun from 'actions/training/updateTrainingRun'
+import updateCachedTrainingRun from 'actions/training/updateCachedTrainingRun'
+import setCachedTrainingRun from 'actions/training/setCachedTrainingRun'
 import addTrainingRun from 'actions/training/addTrainingRun'
 import updateDeploy from 'actions/deploys/updateDeploy'
 import setDeploy from 'actions/deploys/setDeploy'
@@ -21,9 +24,9 @@ import {
   TrainingRun,
   MultiCapture,
   Dataset,
+  VideoCapture,
 } from 'types'
 import { useMount } from 'react-use'
-import { useSelectedId } from 'utils'
 
 // When a job ends there is no other way right now to know if it was a training run
 // but to parse the path and check if it is one of these strings.
@@ -34,6 +37,7 @@ const TRAINING_SCRIPTS = new Set([
   'train_mcnn.py',
   'train_loi_density.py',
   'train_yolo.py',
+  'train_vicct.py',
 ])
 
 const extractScriptPath = (path: string): string => (
@@ -66,7 +70,6 @@ const WebsocketHandler = ({
 }) => {
   const dispatch = useDispatch()
   const url = useSelector((state: RootState) => state.general.websocketUrl)
-  const trainingId = useSelectedId(['/train/:id'])
   const socket = io(url)
 
   useMount(() => {
@@ -75,7 +78,10 @@ const WebsocketHandler = ({
 
     const handleJobUpdate = (data: Job) => {
       if (isTrainingJob((data.job_script_path))) {
-        dispatch(updateTrainingRun(data.id, 'job_status', data.job_status))
+        batch(() => {
+          dispatch(updateTrainingRun(data.id, 'job_status', data.job_status))
+          dispatch(updateCachedTrainingRun(data.id, 'job_status', data.job_status))
+        })
       }
 
       if (isDeployJob(data.job_script_path)) {
@@ -112,7 +118,7 @@ const WebsocketHandler = ({
 
       switch (eventType) {
         case 'update':
-          return dispatch(addChartDataRow(trainingId, jobId, row))
+          return dispatch(addChartDataRow(jobId, row))
         default:
           return null
       }
@@ -152,6 +158,27 @@ const WebsocketHandler = ({
       }
     })
 
+    type VideoCaptureMessage = {
+      event_type: string,
+      data: VideoCapture,
+    }
+
+    socket.on('video-capture', (msg: VideoCaptureMessage) => {
+      const { event_type: eventType, data } = msg
+
+      switch (eventType) {
+        case 'new':
+          return dispatch(addDeploy({ ...data, id: data.running_job_id }))
+        case 'update':
+          return batch(() => {
+            dispatch(setOrAddCachedDeploy({ ...data, id: data.running_job_id }))
+            dispatch(setDeploy({ ...data, id: data.running_job_id }))
+          })
+        default:
+          return null
+      }
+    })
+
     type StreamInstanceMessage = {
       event_type: string,
       data: StreamInstance,
@@ -164,7 +191,10 @@ const WebsocketHandler = ({
         case 'new':
           return dispatch(addDeploy({ ...data, id: data.running_job_id }))
         case 'update':
-          return dispatch(setDeploy({ ...data, id: data.running_job_id }))
+          return batch(() => {
+            dispatch(setOrAddCachedDeploy({ ...data, id: data.running_job_id }))
+            dispatch(setDeploy({ ...data, id: data.running_job_id }))
+          })
         default:
           return null
       }
@@ -182,7 +212,11 @@ const WebsocketHandler = ({
         case 'new':
           return dispatch(addTrainingRun(data))
         case 'update':
-          return dispatch(setOrAddTrainingRun(data))
+          batch(() => {
+            dispatch(setOrAddTrainingRun(data))
+            dispatch(setCachedTrainingRun(data))
+          })
+          return null
         default:
           return null
       }
@@ -200,7 +234,10 @@ const WebsocketHandler = ({
         case 'new':
           return dispatch(addDeploy({ ...data, id: data.running_job_id }))
         case 'update':
-          return dispatch(setDeploy({ ...data, id: data.running_job_id }))
+          return batch(() => {
+            dispatch(setOrAddCachedDeploy({ ...data, id: data.running_job_id }))
+            dispatch(setDeploy({ ...data, id: data.running_job_id }))
+          })
         default:
           return null
       }

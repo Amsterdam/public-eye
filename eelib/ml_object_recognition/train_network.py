@@ -68,7 +68,7 @@ def train(
     opt,
     run_id,
     log_file_path,
-    train_script
+    nn_name
 ):
     with open(log_file_path, 'w') as log_file:
         log_file.write("Precision,Recall,mAP,F1,GIoU,Objectness,Classification,Trainloss\n")
@@ -113,7 +113,7 @@ def train(
         json.dump(opt, f)
 
     config_id = store.insert_train_config(config_path)
-    neural_network = store.get_neural_network_by_script(train_script)
+    neural_network = store.get_neural_network_by_name(nn_name)
     model_id = store.insert_model(opt["model_name"], neural_network.id, model_filename)
 
     # Save label indices, assuming that labels in train and test dataset are the same
