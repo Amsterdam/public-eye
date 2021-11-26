@@ -7,6 +7,7 @@ import {
   getFileName, stringIntegerArithmetic, getToken, fetchJson,
 } from 'utils'
 import { AppThunk } from 'store'
+import { Frame } from 'types'
 
 const captureFrame = (
   videoId: number,
@@ -31,29 +32,31 @@ const captureFrame = (
     const url = `${baseUrl}/files/videos/${videoId}/frames/?tk=${token}`
     const json = await fetchJson(url, ops)
 
-    const fileName = getFileName(json.path)
-    const infoMessage = `Frame has been captured with name: ${fileName}`
+    const fileName = getFileName(json.path as string)
+    const infoMessage = `Frame has been captured with name: ${String(fileName)}`
 
     // update frame count for video
     let { videos } = getState().ingest
-    const videoIndex = R.findIndex(({ id }) => id === json.video_file_id)(videos)
+    const videoIndex = R.findIndex(({ id }: { id: number }) => (
+      id === (json.video_file_id as number)
+    ))(videos || [])
+
     if (videoIndex !== -1) {
       const updatedVideo = {
-        ...videos[videoIndex],
-        frame_count: stringIntegerArithmetic(
-          videos[videoIndex].frame_count, (x) => Number(x) + 1,
-        ),
+        ...(videos || [])[videoIndex],
+        frame_count: String(stringIntegerArithmetic(
+          (videos || [])[videoIndex].frame_count, (x) => String(Number(x) + 1),
+        )),
       }
-      videos = R.update(videoIndex, updatedVideo)(videos)
+      videos = R.update(videoIndex, updatedVideo)(videos || [])
     }
 
     batch(() => {
-      dispatch(setVideos(videos))
+      dispatch(setVideos(videos || []))
       dispatch(setInfo(true, infoMessage))
-      dispatch(addFrame(videoId, json))
+      dispatch(addFrame(videoId, json as Frame))
     })
   } catch (e) {
-    console.error(e)
     dispatch(setInfo(true, 'Capturing frame failed.', 'error'))
   }
 }

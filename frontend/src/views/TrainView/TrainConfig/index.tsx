@@ -1,5 +1,5 @@
+// @ts-nocheck
 import React from 'react'
-import * as R from 'ramda'
 import { useThunkDispatch } from 'store'
 import JsonViewer from 'common/JsonViewer'
 import getTrainingConfig from 'thunks/training/getTrainingConfig'

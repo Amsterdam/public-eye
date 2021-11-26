@@ -18,10 +18,9 @@ const getTrainingLogs = (
     )
     const parsedCsv = parsed.data
 
-    dispatch(setChartData(parsedCsv))
+    dispatch(setChartData(parsedCsv as (number[] | string[])[]))
     return true
   } catch (e) {
-    console.error(e)
     return false
   }
 }

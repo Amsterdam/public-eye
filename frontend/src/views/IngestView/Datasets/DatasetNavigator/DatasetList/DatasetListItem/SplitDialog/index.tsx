@@ -78,6 +78,7 @@ const useDataset = (datasetId: number | null) => {
       dispatch(getDatasetById(Number(datasetId)))
         .then((newDataset) => {
           if (newDataset !== null) {
+            // @ts-ignore
             setDataset(newDataset)
           }
         })

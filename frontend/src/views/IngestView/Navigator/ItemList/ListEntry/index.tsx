@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { memo, useMemo } from 'react'
 import { useRouteMatch } from 'react-router-dom'
 import * as R from 'ramda'

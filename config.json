@@ -4,7 +4,8 @@
     "password": "zong",
     "host": "127.0.0.1",
     "port": 5432,
-    "database": "eagle_eye"
+    "database": "eagle_eye",
+    "test_database": "test_eagle_eye"
   },
   "backend": {
     "url": "http://localhost:3333",
@@ -35,3 +36,4 @@
     }
   }
 }
+

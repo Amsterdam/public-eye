@@ -1,13 +1,13 @@
 import { getToken, fetchJson, StatusError } from 'utils'
 import setInfo from 'actions/general/setInfo'
-import { RoiPolygon, StreamRoi } from 'types'
+import { RoiPolygon } from 'types'
 import { AppThunk } from 'store'
 
 const submitRoi = (
   cameraId: number,
   polygons: RoiPolygon,
   name: string,
-): AppThunk<Promise<StreamRoi | null>> => async (dispatch, getState) => {
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
     const ops = {
       method: 'POST',
@@ -30,7 +30,6 @@ const submitRoi = (
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to submit region of interest', 'error'))
     }
-    console.error(e)
     return null
   }
 }

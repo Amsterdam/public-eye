@@ -9,7 +9,7 @@ const insertCalibration = (
   c: number,
   d: number,
   scalingFactor: number,
-): AppThunk<void> => async (dispatch, getState) => {
+): AppThunk<Promise<void>> => async (dispatch, getState) => {
   try {
     const ops = {
       method: 'POST',
@@ -34,7 +34,6 @@ const insertCalibration = (
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to insert callibration', 'error'))
     }
-    console.error(e)
   }
 }
 

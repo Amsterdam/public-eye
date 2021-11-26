@@ -6,11 +6,11 @@ export type UpdateFrame = {
   frame: Frame,
   itemId: number,
   itemType: string,
-  func: () => void,
+  func: (x: number | string) => string,
 }
 
 const updateFrame = (
-  frame: Frame, itemId: number, itemType: string, func: () => void,
+  frame: Frame, itemId: number, itemType: string, func: (x: number | string) => string,
 ): UpdateFrame => ({
   type: UPDATE_FRAME,
   frame,

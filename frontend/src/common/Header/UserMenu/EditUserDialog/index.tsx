@@ -12,6 +12,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import Button from '@material-ui/core/Button'
 import getUserByToken from 'thunks/users/getUserByToken'
 import editPassword from 'thunks/users/editPassword'
+import { User } from 'types'
 
 const useStyles = makeStyles((theme) => ({
   textField: {
@@ -30,13 +31,13 @@ const useStyles = makeStyles((theme) => ({
 
 type EditUserDialogProps = {
   open: boolean,
-  handleClose: () => null,
+  handleClose: () => void,
 }
 
 const EditUserDialog = ({ open, handleClose }: EditUserDialogProps) => {
   const classes = useStyles()
   const dispatch = useThunkDispatch()
-  const [currentUser, setCurrentUser] = useState(null)
+  const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [newPassword, setNewPassword] = useState('')
   const [repeatedNewPassword, setRepeatedNewPassword] = useState('')
   const [currentPassword, setCurrentPassword] = useState('')
@@ -45,7 +46,7 @@ const EditUserDialog = ({ open, handleClose }: EditUserDialogProps) => {
     dispatch(getUserByToken())
       .then((user) => {
         if (user) {
-          setCurrentUser(user)
+          setCurrentUser(user as User)
         }
       })
   }, [open, dispatch])

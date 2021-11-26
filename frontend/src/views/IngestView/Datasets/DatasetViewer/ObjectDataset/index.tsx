@@ -65,13 +65,16 @@ const ObjectDataset = (): React.ReactElement => {
   const dispatch = useThunkDispatch()
   const ref = useRef(null)
   const baseUrl = useSelector((state: RootState) => state.general.baseUrl)
+  // @ts-ignore
   const selectedId = useSelectedId()
 
   const [framesAndLabels, setFramesAndLabels] = useState([])
 
   useEffect(() => {
     if (selectedId === null) return
+    // @ts-ignore
     dispatch(getFramesAndLabelsForDataset(selectedId))
+      // @ts-ignore
       .then(setFramesAndLabels)
   }, [selectedId, dispatch])
 
@@ -80,6 +83,7 @@ const ObjectDataset = (): React.ReactElement => {
   const createRow = (entry: FrameAndLabel) => {
     const boundingBoxes: BoundingBox[] = []
     range(0, entry.bounding_box_id.length).forEach((i) => {
+      // @ts-ignore
       boundingBoxes.push({
         x: entry.bounding_box_x[i],
         y: entry.bounding_box_y[i],

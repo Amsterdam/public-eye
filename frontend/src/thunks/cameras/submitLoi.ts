@@ -1,13 +1,13 @@
 import { getToken, fetchJson, StatusError } from 'utils'
 import setInfo from 'actions/general/setInfo'
-import { LoiPolygon, StreamLoi } from 'types'
+import { LoiPolygon } from 'types'
 import { AppThunk } from 'store'
 
 const submitLoi = (
   cameraId: number,
   polygons: LoiPolygon,
   name: string,
-): AppThunk<Promise<StreamLoi>> => async (dispatch, getState) => {
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
     const ops = {
       method: 'POST',
@@ -30,7 +30,6 @@ const submitLoi = (
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to submit line of interest', 'error'))
     }
-    console.error(e)
     return null
   }
 }

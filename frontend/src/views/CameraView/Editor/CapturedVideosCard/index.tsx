@@ -30,10 +30,10 @@ const useVideosByCameraId = (cameraId: string | null): Video[] => {
       return
     }
 
-    dispatch(getVideosByCameraId(cameraId))
+    dispatch(getVideosByCameraId(Number(cameraId)))
       .then((newVideos) => {
         if (newVideos) {
-          setVideos(newVideos)
+          setVideos(newVideos as Video[])
         }
       })
   }, [cameraId, dispatch])
@@ -42,7 +42,7 @@ const useVideosByCameraId = (cameraId: string | null): Video[] => {
 }
 
 const CapturedVideoCard = (): React.ReactElement => {
-  const selectedCameraId = useSelectedId()
+  const selectedCameraId = useSelectedId(['/cameras/:id'])
   const classes = useStyles()
   const history = useHistory()
 

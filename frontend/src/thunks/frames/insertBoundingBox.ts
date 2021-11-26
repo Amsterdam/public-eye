@@ -1,6 +1,5 @@
 import { getToken, fetchJson, StatusError } from 'utils'
 import setInfo from 'actions/general/setInfo'
-import { BoundingBox } from 'types'
 import { AppThunk } from 'store'
 
 const insertBoundingBox = (
@@ -10,7 +9,7 @@ const insertBoundingBox = (
   y: number,
   w: number,
   h: number,
-): AppThunk<Promise<BoundingBox | null>> => async (dispatch, getState) => {
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
     const token = getToken()
     const { baseUrl } = getState().general

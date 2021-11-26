@@ -1,8 +1,8 @@
 import { getToken, fetchJson, StatusError } from 'utils'
 import setInfo from 'actions/general/setInfo'
 import { AppThunk } from 'store'
-import { Frame } from 'types'
 import setOrAddFrame from 'actions/frames/setOrAddFrame'
+import { Frame } from 'types'
 
 const getFrameById = (
   frameId: string | number,
@@ -12,7 +12,7 @@ const getFrameById = (
     const token = getToken()
     const json = await fetchJson(`${baseUrl}/frames/${frameId}?tk=${token}`)
 
-    dispatch(setOrAddFrame(json))
+    dispatch(setOrAddFrame(json as Frame))
   } catch (e) {
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to fetch video frames', 'error'))

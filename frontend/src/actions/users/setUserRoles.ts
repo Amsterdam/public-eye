@@ -1,12 +1,10 @@
-import { UserRole } from 'types'
-
 export const SET_USER_ROLES = 'SET_USER_ROLES'
 export type SetUserRoles = {
   type: string,
-  roles: UserRole[]
+  roles: string[]
 }
 
-const setUserRoles = (roles: UserRole[]): SetUserRoles => ({
+const setUserRoles = (roles: string[]): SetUserRoles => ({
   type: SET_USER_ROLES,
   roles,
 })

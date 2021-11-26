@@ -7,7 +7,7 @@ export type SetDeploys = {
   deploys: Deploy[],
 }
 
-const setDeploys = (deploys: Deploy[]) => ({
+const setDeploys = (deploys: Deploy[]): SetDeploys => ({
   type: SET_DEPLOYS,
   deploys,
 })

@@ -1,7 +1,8 @@
+// @ts-nocheck
 import React, {
   useState, useMemo, memo, useCallback,
 } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import * as R from 'ramda'
 import Paper from '@material-ui/core/Paper'
 import { makeStyles } from '@material-ui/core/styles'
@@ -11,10 +12,11 @@ import TextField from '@material-ui/core/TextField'
 import AddToCollectionDialog from 'common/AddToCollectionDialog'
 import upload from 'thunks/staticFiles/upload'
 import FileInputButton from 'common/FileInputButton'
-import NewCollectionDialog from './NewCollectionDialog'
+import NewCollectionDialog from 'views/IngestView/Collections/NewCollectionDialog'
+import CombineCollectionsDialog from 'views/IngestView/Collections/CombineCollectionsDialog'
+import ExportCollectionDialog from 'views/IngestView/Collections/ExportCollectionDialog'
+import { useIngestPath } from 'utils'
 import CreateDatasetDialog from './CreateDatasetDialog'
-import CombineCollectionsDialog from './CombineCollectionsDialog'
-import ExportCollectionDialog from './ExportCollectionDialog'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -57,10 +59,10 @@ const Actions = (props: ActionProps) => {
   const [addToCollectionOpen, setAddtoCollectionOpen] = useState(false)
   const [exportDialogOpen, setExportDialogOpen] = useState(false)
   const [createDatasetOpen, setCreateDatasetOpen] = useState(false)
-  const selectedItem = useSelector((state) => R.path(['general', 'itemSelected'], state))
+  const { id } = useIngestPath()
 
   const submitFile = useCallback(
-    (e) => dispatch(upload('videos', e.target.files)),
+    (e: React.SyntheticEvent<HTMLInputElement>) => dispatch(upload('videos', e.target.files)),
     [dispatch],
   )
 
@@ -86,7 +88,8 @@ const Actions = (props: ActionProps) => {
     return null
   }, [setCollectionDialogOpen, type, submitFile])
 
-  const selectedFrameIds = Object.keys(checkedItems).filter((id) => checkedItems[id])
+  const selectedFrameIds = Object.keys(checkedItems)
+    .filter((frameId) => checkedItems[frameId])
 
   return (
     <>
@@ -109,7 +112,6 @@ const Actions = (props: ActionProps) => {
                 className={classes.button}
                 color="primary"
                 variant="contained"
-                disabled={!selectedItem}
                 onClick={() => setExportDialogOpen(true)}
               >
                 export
@@ -119,7 +121,7 @@ const Actions = (props: ActionProps) => {
           <CreateDatasetDialog
             open={createDatasetOpen}
             handleClose={() => setCreateDatasetOpen(false)}
-            disabled={selectedFrameIds.length === 0 && !(selectedItem && selectedItem.type === 'collection')}
+            disabled={selectedFrameIds.length === 0}
             selectedFrameIds={selectedFrameIds}
           />
           {
@@ -153,7 +155,7 @@ const Actions = (props: ActionProps) => {
       <ExportCollectionDialog
         open={exportDialogOpen}
         handleClose={() => setExportDialogOpen(false)}
-        collectionId={selectedItem && selectedItem.id}
+        collectionId={id ? Number(id) : null}
       />
       <AddToCollectionDialog
         open={addToCollectionOpen}
@@ -165,7 +167,7 @@ const Actions = (props: ActionProps) => {
   )
 }
 
-const areEqual = (prevProps, nextProps) => {
+const areEqual = (prevProps: ActionProps, nextProps: ActionProps) => {
   if (!R.equals(prevProps.type, nextProps.type)) {
     return false
   }

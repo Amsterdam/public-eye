@@ -1,10 +1,12 @@
 # Installation
 
-- The Eagle Eye platform has been verified to work on Ubuntu 20.04 (LTS) and 18.04 (LTS) and Windows 10.
+- The Public Eye platform has been verified to work on Ubuntu 20.04 (LTS) and 18.04 (LTS) and Windows 10.
 - During this installation guide, we assume that your Linux username is '**username**'. Please change this **username** string with your actual Linux username in the installation commands.
 - We assume Python 3.x is installed (e.g. Python 3.8).
-- You must use Node 13.14. Node 14 won't work yet
-- Cuda 10.2 and Pytorch 1.6
+- Node.js v17
+- Cuda 11 and Pytorch 1.6
+
+Please note that we will use `eagle_eye` instead of `public_eye` in this doc. This has to do with the fact that the initial project name was `eagle_eye` and we haven't updated all the scripts and paths yet :-).
 
 ## Basic
 
@@ -30,36 +32,23 @@ We will now create a virtual Python environment which will be used by Eagle Eye.
 - `cd $EAGLE_EYE_PATH`
 - `virtualenv --python=/usr/bin/python3 eagle_eye_p3`
 - `source eagle_eye_p3/bin/activate`
-- `pip install postgres==3.0.0 torch==1.6.0 Pillow scipy opencv-python matplotlib torchvision==0.7.0 tqdm h5py jupyter imageio watchdog requests wget pyyaml psutil pandas timm scikit-image easydict cupy-cuda104 scikit-image easydict'
+- `pip install postgres==3.0.0 torch==1.6.0 Pillow scipy opencv-python matplotlib torchvision==0.7.0 tqdm h5py jupyter imageio watchdog requests wget pyyaml psutil pandas timm scikit-image easydict scikit-image easydict'
+- We also need cupy for cuda (at least v. 101). Please check cupy docs for right version for your system. We use cupy-cuda101
 - `deactivate`
 
 By default, this environment is used by the node backend of Eagle Eye. We can activate this virtual environment manually for testing purposes by running `source eagle_eye_p3/bin/activate` in the EAGLE_EYE_PATH directory.
 
 ## Windows 
 
-To get it running on windows, some special things should be noted:
-
-Scheduler config must be updated to launch scripts from powershell. Add this section to `config.json`:
-
-```
-  "scheduler": {
-    "maxParallel": 4,
-    "source_cmd": "C:\\Projects\\eagle_eye\\eagle_eye_p3\\Scripts\\activate.ps1",
-    "command": "powershell.exe"
-  }
-```
-
-Also make sure to add PYTHONPATH and EAGLE_EYE_PATH to your Env. 
-
-Lastly, torch and torchvision must be installed according to pytorch.org. `pip install torch===1.6.0 torchvision===0.7.0 -f https://download.pytorch.org/whl/torch_stable.html`
+Torch and torchvision must be installed according to pytorch.org. `pip install torch===1.6.0 torchvision===0.7.0 -f https://download.pytorch.org/whl/torch_stable.html`
 
 ## Node
 
-- `curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -`
+- `curl -fsSL https://deb.nodesource.com/setup_17.x | sudo -E bash -`
 - `sudo apt install -y nodejs npm`
 - `sudo npm install npm@latest -g`  # Updates npm to a version that is compatible with the newest NodeJS version.
 - `sudo npm install -g yarn`
-
+- `npm install -g npx`
 
 ## Postgres
 
@@ -71,7 +60,9 @@ Lastly, torch and torchvision must be installed according to pytorch.org. `pip i
 - `CREATE ROLE username WITH LOGIN;`  # Replace the word "**username**" with your actual linux username.
 - `\password username;`  # Replace the word "**username**" with your actual linux username.
 - `CREATE DATABASE eagle_eye;`
-- `GRANT ALL PRIVILEGES ON DATABASE eagle_eye TO username;`  # Replace the word "**username**" with your actual linux username.
+- `CREATE DATABASE test_eagle_eye;`
+- `GRANT ALL PRIVILEGES ON DATABASE eagle_eye TO username;`
+- `GRANT ALL PRIVILEGES ON DATABASE test_eagle_eye TO username;`  # Replace the word "**username**" with your actual linux username.
 - `\q`
 - `exit`
 - cd `$EAGLE_EYE_PATH/install`
@@ -94,7 +85,7 @@ Steps to install the backend:
 - `node src/scripts/getEelibToken.js`
 - insert the token into config.json
 
-You can start the backend by running `node index.js` in the backend directory.
+You can start the backend by running `yarn start` in the backend directory. For development you can run `yarn dev` to enable automatic reloads.
 
 
 ## Frontend
@@ -108,16 +99,7 @@ You can start the frontend by running `yarn start` in the frontend directory.
 
 If `yarn start` causes an error, read the error message and delete (`rm -rf`) the package in question (likely eslint and/or babel-eslint).
 
-
-[1] If using nginx (installation instructions for nginx can be found below in the 'Production' section):
-
-```
-REACT_APP_HOST_LOCATION='https://localhost/api'
-```
-If https does not work, just change the url to use http instead.
-
-
-[2] If not using nginx:
+[1] If not using nginx 
 
 ```
 REACT_APP_HOST_LOCATION='http://localhost:3333'
@@ -128,21 +110,6 @@ To use the Eagle Eye platform **locally**, you need to install a CORS plugin, an
 
 Working Firefox CORS plugin: https://addons.mozilla.org/nl/firefox/addon/cors-everywhere
 Working Chrome CORS plugin: https://chrome.google.com/webstore/detail/cors-unblock/lfhmikememgdcahcdlaciloancbhjino
-
-
-## Jupyter Notebook
-
-To work with Jupyter Notebook, you can run the following command:
-
-- `start_jupyter_bg.bash`
-
-Jupyter Notebook now runs on port 8888, and its output is logged to the file `jupyter_notebook.log`. From this file, you can also get the token-code to login into the Jupter Notebook. When rebooting, Jupyter Notebook will not auto-restart, so it should be restated manually with the command above.
-
-
-## Mock data
-
-If you want some mock data, please refer to install/dev_mock_data/README.md
-
 
 ## Public dataset installation
 

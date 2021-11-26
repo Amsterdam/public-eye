@@ -41,7 +41,7 @@ const useLocationToTab = (): number => {
   return tabSelected
 }
 
-const NavigationTabs = () => {
+const NavigationTabs = (): JSX.Element => {
   const history = useHistory()
   const viewMode = useLocationToTab()
 

@@ -25,8 +25,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const CalibrateButton = (): React.ReactElement => {
-  const cameraId = useSelectedId()
+const CalibrateButton = (): JSX.Element => {
+  const cameraId = useSelectedId(['/camera/:id'])
   const classes = useStyles()
   const [calibrateDialogOpen, setCalibrateDialogOpen] = useState(false)
 
@@ -35,7 +35,7 @@ const CalibrateButton = (): React.ReactElement => {
       <CalibrateDialog
         open={calibrateDialogOpen}
         handleClose={() => setCalibrateDialogOpen(false)}
-        cameraId={cameraId}
+        cameraId={Number(cameraId)}
       />
       <Fab
         size="small"

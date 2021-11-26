@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const CombineCollectionsDialog = () => {
+const CombineCollectionsDialog = (): JSX.Element => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [open, setOpen] = useState(false)
@@ -54,13 +54,16 @@ const CombineCollectionsDialog = () => {
   const handleOpen = useCallback(() => { setOpen(true) }, [])
 
   const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    // @ts-ignore
     setSelected(event.target.value)
   }, [])
 
   const submitAction = useCallback(() => {
     const nameMapToId = {}
 
+    // @ts-ignore
     collections.forEach((col: Collection) => {
+      // @ts-ignore
       nameMapToId[col.name] = col.id
     })
 
@@ -90,10 +93,13 @@ const CombineCollectionsDialog = () => {
               id="demo-mutiple-chip"
               multiple
               value={selected}
+              // @ts-ignore
               onChange={handleChange}
               input={<Input id="select-multiple-chip" />}
+              // @ts-ignore
               renderValue={(tempSelected: Collection[]) => (
                 <div className={classes.chips}>
+                  {/* @ts-ignore */}
                   {tempSelected.map((value: string) => (
                     <Chip key={value} label={value} className={classes.chip} />
                   ))}

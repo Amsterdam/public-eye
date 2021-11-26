@@ -19,13 +19,14 @@ type ContextType = {
   zoomSize: [number, React.Dispatch<React.SetStateAction<number>>],
 }
 
+// @ts-ignore
 export const StoreContext = React.createContext<ContextType>()
 
 const StoreProvider = ({
   children,
 }: {
   children: React.ReactElement,
-}) => {
+}): JSX.Element => {
   const [zoomLocation, setZoomLocation] = React.useState<[number, number] | null>(null)
   const [choosingZoom, setChoosingZoom] = React.useState(false)
   const [hideIdentifiers, setHideIdentifers] = React.useState(true)
@@ -51,6 +52,7 @@ const StoreProvider = ({
     zoomSize: [zoomSize, setZoomSize],
   }
 
+  // @ts-ignore
   return <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
 }
 

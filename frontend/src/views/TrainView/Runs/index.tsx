@@ -3,7 +3,7 @@ import PageContainer from 'common/PageContainer'
 import TrainInfoViewer from './TrainInfoViewer'
 import Navigator from './Navigator'
 
-const Runs = () => (
+const Runs = (): JSX.Element => (
   <PageContainer>
     <Navigator />
     <TrainInfoViewer />

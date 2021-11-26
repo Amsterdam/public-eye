@@ -12,7 +12,7 @@ const commitUpdateFrame = (
   data: Frame,
   itemId: number | undefined,
   itemType: string,
-  lockCountChangeFunc = (x: number): number => x,
+  lockCountChangeFunc = (x: number | string): string => String(x),
 ): AppThunk<Promise<boolean | null>> => async (dispatch, getState) => {
   try {
     const token = getToken()
@@ -32,9 +32,9 @@ const commitUpdateFrame = (
     const newFrame = { ...json, item_id: itemId, type: itemType }
 
     batch(() => {
-      dispatch(updateFrame(newFrame, itemId, itemType, lockCountChangeFunc))
-      dispatch(updateNavigatorFrame(newFrame))
-      dispatch(setOrAddFrame(newFrame))
+      dispatch(updateFrame(newFrame as Frame, itemId as number, itemType, lockCountChangeFunc))
+      dispatch(updateNavigatorFrame(newFrame as Frame))
+      dispatch(setOrAddFrame(newFrame as Frame))
     })
 
     return true

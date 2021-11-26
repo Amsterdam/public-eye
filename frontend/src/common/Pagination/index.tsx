@@ -22,7 +22,7 @@ const PaginationComponent = ({
   numberOfItems: number,
   changePage: (value: number) => void,
   page: number,
-}) => {
+}): JSX.Element => {
   const classes = useStyles()
 
   const handleChange = React.useCallback((event, value) => {

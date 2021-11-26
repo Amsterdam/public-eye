@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react'
 import { batch } from 'react-redux'
 import uuid from 'uuid'
@@ -28,7 +29,7 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-const UploadDialog = () => {
+const UploadDialog = (): JSX.Element => {
   const classes = useStyles()
   const dispatch = useThunkDispatch()
   const [open, setOpen] = React.useState(false)
@@ -61,6 +62,7 @@ const UploadDialog = () => {
               : oldProgress
           ))
         } catch (err) {
+          // eslint-disable-next-line
           console.error(err)
         }
       })
@@ -75,6 +77,7 @@ const UploadDialog = () => {
         batch(() => {
           dispatch(setInfo(true, 'File uploaded'))
           dispatch(addVideo(videoFile))
+          setTimeout(() => setOpen(false), 700)
         })
         setProgress(100)
       })

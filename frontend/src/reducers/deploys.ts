@@ -51,10 +51,15 @@ const setDeploy = (
 
 const addDeploy = (
   state: DeploysReducer, action: AddDeploy,
-) => ({
-  ...state,
-  deploys: new Map(prepend([action.deploy.id, action.deploy])(Array.from(state.deploys.entries()))),
-})
+): DeploysReducer => {
+  const oldDeploys = Array.from(state.deploys.entries())
+  const deploysAsArray = prepend([action.deploy.id, action.deploy] as [number, Deploy])(oldDeploys)
+  const deploys = new Map<number, Deploy>(deploysAsArray)
+  return {
+    ...state,
+    deploys,
+  }
+}
 
 const updateDeploy = (
   state: DeploysReducer, action: UpdateDeploy,

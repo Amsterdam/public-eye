@@ -2,29 +2,27 @@ import React, { useRef } from 'react'
 import * as R from 'ramda'
 
 type PolygonProps = {
-  index: number,
   width: number,
   height: number,
-  polygon: number[],
-  onClick: () => null,
+  polygon: [number, number][],
+  onClick: (e: React.MouseEvent<HTMLImageElement>) => void,
 }
 
 const Polygon = ({
-  index, width, height, polygon, onClick,
-}: PolygonProps): React.ReactElement => {
+  width, height, polygon, onClick,
+}: PolygonProps): JSX.Element | null => {
   const ref = useRef(null)
   const points = R.pipe(
-    R.map((xy) => `${xy[0] * width},${xy[1] * height}`),
+    R.map((xy: [number, number]) => `${xy[0] * width},${xy[1] * height}`),
     R.join(' '),
   )(polygon)
 
   if (polygon.length < 3) {
-    return ''
+    return null
   }
 
   return (
     <div
-      key={index}
       onClick={onClick}
       style={{
         position: 'absolute',

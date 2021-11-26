@@ -29,7 +29,6 @@ const deleteModel = (
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to delete model', 'error'))
     }
-    console.error('error', e)
     return false
   }
 }

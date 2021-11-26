@@ -72,9 +72,10 @@ const Density = ({
     const centerX = calculateX(e.clientX)
     const centerY = calculateY(e.clientY)
 
-    dispatch(commitTag(frame.id as number, centerX, centerY))
+    dispatch(commitTag(frame.id, centerX, centerY))
       .then((result) => {
         if (result !== null) {
+          // @ts-ignore
           setTags((oldClicks) => R.append(result, oldClicks))
         }
       })
@@ -82,9 +83,10 @@ const Density = ({
 
   React.useEffect(() => {
     setTagSelected(null)
-    dispatch(getTags(frame.id as number))
+    dispatch(getTags(frame.id))
       .then((newTags) => {
         if (newTags !== null) {
+          // @ts-ignore
           setTags(newTags)
         }
       })

@@ -85,9 +85,11 @@ const NewMultiDialog = (props: NewMultiDialogProps): React.ReactElement => {
     setStreams(R.append(defaultArgs))
   }
 
+  // @ts-ignore
   const args: StreamArgs | null = R.pathOr(null, [selectedId], streams)
 
   const setArgs = (setter: (args: StreamArgs) => StreamArgs) => {
+    // @ts-ignore
     setStreams(R.update(selectedId, setter(args)))
   }
 
@@ -96,6 +98,7 @@ const NewMultiDialog = (props: NewMultiDialogProps): React.ReactElement => {
     handleClose()
   }
 
+  // @ts-ignore
   const remove = (idx) => () => {
     setSelectedId(null)
     setStreams(R.remove(idx, 1))
@@ -104,7 +107,9 @@ const NewMultiDialog = (props: NewMultiDialogProps): React.ReactElement => {
   // initialize from preset
   useEffect(() => {
     if (preset) {
+      // @ts-ignore
       setStreams(preset.args)
+      // @ts-ignore
       setName(preset.name)
     }
   }, [preset])
@@ -114,7 +119,9 @@ const NewMultiDialog = (props: NewMultiDialogProps): React.ReactElement => {
       setSelectedPresetId(e.target.value)
       const streamInstance = deploys.get(Number(e.target.value))
 
+      // @ts-ignore
       const tempPreset = JSON.parse(streamInstance.job_script_payload) as StreamArgs
+      // @ts-ignore
       setStreams(R.update(selectedId)(tempPreset))
     } catch {
       // do nothing
@@ -178,6 +185,7 @@ const NewMultiDialog = (props: NewMultiDialogProps): React.ReactElement => {
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
+                // @ts-ignore
                 onChange={handlePresetSelection}
                 value={selectedPresetId !== null ? selectedPresetId : ''}
               >
@@ -199,6 +207,7 @@ const NewMultiDialog = (props: NewMultiDialogProps): React.ReactElement => {
             && (
               <CameraForm
                 multicapture
+                // @ts-ignore
                 setArgs={setArgs}
                 args={args}
               />

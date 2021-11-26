@@ -32,6 +32,7 @@ const DatasetList = (): React.ReactElement => {
   const selectedId = useSelectedId(['/ingest/datasets/:id'])
 
   React.useEffect(() => {
+    // @ts-ignore
     dispatch(getDatasets((page - 1) * NUMBER_OF_PAGINATION_ITEMS, NUMBER_OF_PAGINATION_ITEMS))
   }, [page, dispatch])
 
@@ -46,14 +47,12 @@ const DatasetList = (): React.ReactElement => {
       index={id}
       name={name}
       nnType={nnType}
+      // @ts-ignore
       onClick={onSetDatasetSelected({ id, nn_type: nnType })}
+      // @ts-ignore
       selectedId={selectedId}
     />
   ), [onSetDatasetSelected, selectedId])
-
-  const datasetsFetch = useCallback((skip, limit) => {
-    dispatch(getDatasets(skip, limit))
-  }, [dispatch])
 
   const navigate = React.useCallback((newPage: number) => {
     history.push(`/ingest/datasets${selectedId ? `/${selectedId}` : ''}?page=${newPage}`)
@@ -65,6 +64,7 @@ const DatasetList = (): React.ReactElement => {
         <EmptyFallBackProgress
           isEmpty={datasets === null}
         >
+          {/* @ts-ignore */}
           { (datasets || []).map(createListItem) }
         </EmptyFallBackProgress>
       </List>

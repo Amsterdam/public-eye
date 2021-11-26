@@ -38,9 +38,11 @@ const MultiCaptureView = ({
       >
         <LogViewer
           jobId={multiCapture.id}
+          // @ts-ignore
           jobStatus={multiCapture.job_status}
         />
       </Box>
+      {/* @ts-ignore */}
       <JobActionButton
         fabAction={fabAction}
         fabTitle={fabTitle}

@@ -1,5 +1,6 @@
+// @ts-nocheck
 import React, {
-  useCallback, useState, memo, useMemo, useEffect,
+  useCallback, useState, memo, useMemo,
 } from 'react'
 import { useHistory } from 'react-router-dom'
 import { useSelector } from 'react-redux'
@@ -12,7 +13,6 @@ import {
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import AddToCollectionDialog from 'common/AddToCollectionDialog'
-import { NUMBER_OF_PAGINATION_ITEMS } from 'common/Pagination'
 import SideBar from 'common/SideBar'
 import { RootState } from 'reducers'
 import getVideos from 'thunks/staticFiles/getVideos'

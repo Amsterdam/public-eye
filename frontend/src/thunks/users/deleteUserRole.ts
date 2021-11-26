@@ -18,7 +18,6 @@ const deleteUserRole = (
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to delete user role', 'error'))
     }
-    console.error(e)
     return false
   }
 }

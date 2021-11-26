@@ -29,26 +29,37 @@ const useStyles = makeStyles((theme) => ({
 
 const StreamInstanceList = (): React.ReactElement => {
   const cameraId = useSelectedId(['/camera/:id'])
-  const [streamInstances, setStreamInstances] = useState<StreamInstance>([])
-  const [multiCaptures, setMultiCaptures] = useState<MultiCapture>([])
+  // @ts-ignore
+  const [streamInstances, setStreamInstances] = useState<StreamInstance[]>([])
+  // @ts-ignore
+  const [multiCaptures, setMultiCaptures] = useState<MultiCapture[]>([])
   const classes = useStyles()
   const dispatch = useThunkDispatch()
   const history = useHistory()
 
-  const items: (StreamInstance | MultiCapture)[] = useMemo(() => R.pipe(
+  // @ts-ignore
+  // eslint-disable-next-line
+  const items = useMemo(() => R.pipe(
+    // @ts-ignore
     R.concat(multiCaptures),
+    // @ts-ignore
     R.sort(R.descend(R.prop('running_job_id'))),
-  )(streamInstances), [multiCaptures, streamInstances])
+    // @ts-ignore
+  )(streamInstances), [multiCaptures, streamInstances]) as (StreamInstance | MultiCapture)[]
 
   useEffect(() => {
     if (cameraId) {
+      // @ts-ignore
       dispatch(getStreamInstancesByCameraId(cameraId))
         .then((result) => {
+          // @ts-ignore
           setStreamInstances(result)
         })
 
+      // @ts-ignore
       dispatch(getMultiCapturesByCameraId(cameraId))
         .then((result) => {
+          // @ts-ignore
           setMultiCaptures(result)
         })
     }

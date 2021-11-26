@@ -1,9 +1,7 @@
 import React, { useMemo, useCallback, useEffect } from 'react'
-import { useSelector } from 'react-redux'
 import { useDrop } from 'react-dnd'
 import {
   update,
-  path,
   append,
 } from 'ramda'
 import { useThunkDispatch } from 'store'
@@ -11,7 +9,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import updateTag from 'thunks/tags/updateTag'
 import { Frame } from 'types'
 import { useMeasure } from 'utils'
-import { RootState } from 'reducers'
 import commitTag from 'thunks/tags/commitTag'
 import { StoreContext } from '../context'
 import Circle, { ITEM_TYPE_CIRCLE } from '../Circle'
@@ -162,7 +159,9 @@ const ZoomedImage = ({
 
   const [, dropZoom] = useDrop({
     accept: ITEM_TYPE_CIRCLE,
+    // @ts-ignore
     drop(item: { x: number, y: number, index: number }, monitor) {
+      // @ts-ignore
       if (!item.zoom) {
         return
       }
@@ -172,7 +171,9 @@ const ZoomedImage = ({
         centerY,
       } = transformClickLocation(
         zoomLocation,
+        // @ts-ignore
         item.x + delta.x,
+        // @ts-ignore
         item.y + delta.y,
         originalImageHeight,
         originalImageWidth,
@@ -191,6 +192,7 @@ const ZoomedImage = ({
       ))
         .then((result) => {
           if (result !== null) {
+            // @ts-ignore
             setTags(update(item.index, result))
           }
         })
@@ -265,9 +267,10 @@ const ZoomedImage = ({
       top,
     )
 
-    dispatch(commitTag(frame.id as number, centerX, centerY))
+    dispatch(commitTag(frame.id, centerX, centerY))
       .then((result) => {
         if (result !== null) {
+          // @ts-ignore
           setTags((oldClicks) => append(result, oldClicks))
         }
       })

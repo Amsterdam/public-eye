@@ -5,7 +5,6 @@ import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
 import getFramesAndLabelsForDataset from 'thunks/datasets/getFramesAndLabelsForDataset'
 import { useSelectedId } from 'utils'
-import { Frame } from 'types'
 import DensityDatasetRow from './DensityDatasetRow'
 
 const useStyles = makeStyles((theme) => ({
@@ -25,13 +24,16 @@ type FrameWithGroundTruth = {
 const DensityDataset = (): React.ReactElement => {
   const classes = useStyles()
   const dispatch = useThunkDispatch()
+  // @ts-ignore
   const selectedId = useSelectedId()
 
   const [framesAndGts, setFramesAndGts] = useState([])
 
   useEffect(() => {
     if (selectedId === null) return
+    // @ts-ignore
     dispatch(getFramesAndLabelsForDataset(selectedId))
+      // @ts-ignore
       .then(setFramesAndGts)
   }, [selectedId, dispatch])
 

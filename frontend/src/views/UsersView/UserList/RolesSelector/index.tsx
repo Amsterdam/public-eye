@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useCallback, useEffect, useState } from 'react'
 import * as R from 'ramda'
 import Autocomplete from '@material-ui/lab/Autocomplete'

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, memo } from 'react'
+import React from 'react'
 import { useSelector } from 'react-redux'
 import { length, intersection } from 'ramda'
 import { useHistory } from 'react-router-dom'
@@ -37,9 +37,9 @@ const NavigationMenu = (props: NavigationMenuProps) => {
 
   const history = useHistory()
   const userRoles = useSelector((state: RootState) => state.general.userAuth.roles)
-  const navigate = useCallback((label: string) => () => history.push(`/${label}`), [history])
+  const navigate = React.useCallback((label: string) => () => history.push(`/${label}`), [history])
 
-  const filteredMenuItems = useMemo(
+  const filteredMenuItems = React.useMemo(
     () => menuItems.filter(showView(userRoles)), [menuItems, userRoles],
   )
 
@@ -54,4 +54,4 @@ const NavigationMenu = (props: NavigationMenuProps) => {
   ))
 }
 
-export default memo(NavigationMenu)
+export default NavigationMenu

@@ -1,9 +1,8 @@
 import { getToken, fetchJson, StatusError } from 'utils'
 import setInfo from 'actions/general/setInfo'
 import { AppThunk } from 'store'
-import { Dataset } from 'types'
 
-const getDatasetById = (id: number): AppThunk<Promise<Dataset | null>> => async (
+const getDatasetById = (id: number): AppThunk<Promise<unknown>> => async (
   dispatch, getState,
 ) => {
   try {

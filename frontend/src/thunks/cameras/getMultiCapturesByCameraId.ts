@@ -1,11 +1,10 @@
 import { getToken, fetchJson, StatusError } from 'utils'
 import setInfo from 'actions/general/setInfo'
-import { MultiCapture } from 'types'
 import { AppThunk } from 'store'
 
 const getMultiCapturesByCameraId = (
   id: number,
-): AppThunk<Promise<MultiCapture[] | null>> => async (dispatch, getState) => {
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
     const token = getToken()
     const { baseUrl } = getState().general

@@ -57,11 +57,11 @@ const useStyles = makeStyles((theme) => ({
 
 type CalibrateDialogProps = {
   open: boolean,
-  handleClose: () => null,
+  handleClose: () => void,
   cameraId: number,
 }
 
-type TransformationMatrix = {
+export type TransformationMatrix = {
   a: number,
   b: number,
   c: number,
@@ -83,7 +83,7 @@ const CalibrateDialog = (props: CalibrateDialogProps) => {
     useState<TransformationMatrix | null>(null)
   )
   const [scaling, setScaling] = useState(30)
-  const [squareMeter, setSquareMeter] = useState(1)
+  const [squareMeter, setSquareMeter] = useState('1')
   const [imageWidth, setImageWidth] = useState(1)
   const [ordering, setOrdering] = useState('0123')
 
@@ -94,7 +94,7 @@ const CalibrateDialog = (props: CalibrateDialogProps) => {
     dispatch(getStreamCaptureByCameraId(cameraId))
       .then((result) => {
         if (result) {
-          setStreamCapture(result)
+          setStreamCapture(result as StreamCaptureType)
         } else {
           setStreamCapture(null)
         }
@@ -133,7 +133,7 @@ const CalibrateDialog = (props: CalibrateDialogProps) => {
   }
 
   const projectedImage = () => {
-    if (transformationMatrix) {
+    if (transformationMatrix && streamCaptureUrl) {
       const {
         a, b, c, d,
       } = transformationMatrix
@@ -155,6 +155,9 @@ const CalibrateDialog = (props: CalibrateDialogProps) => {
   }
 
   useEffect(() => {
+    if (streamCaptureUrl === null) {
+      return
+    }
     const img = new Image()
     img.src = streamCaptureUrl
     img.onload = () => {
@@ -163,14 +166,20 @@ const CalibrateDialog = (props: CalibrateDialogProps) => {
   }, [streamCaptureUrl])
 
   const submitFunction = () => {
+    if (!transformationMatrix) {
+      return
+    }
     const imageRatio = imageWidth / STREAM_CAPTURE_WIDTH
-    const fromPixelToSquareM = ((scaling / 2) / squareMeter) * imageRatio
+    const fromPixelToSquareM = ((scaling / 2) / Number(squareMeter)) * imageRatio
 
     const {
       a, b, c, d,
     } = transformationMatrix
 
     dispatch(insertCalibration(cameraId, a, b, c, d, fromPixelToSquareM))
+      .finally(() => {
+        handleClose()
+      })
   }
 
   return (
@@ -192,7 +201,7 @@ const CalibrateDialog = (props: CalibrateDialogProps) => {
               disabled={!streamCapture}
               className={classes.slider}
               value={scaling}
-              onChange={(e, v) => setScaling(v)}
+              onChange={(e, v) => setScaling(v as number)}
             />
           </div>
           <TextField

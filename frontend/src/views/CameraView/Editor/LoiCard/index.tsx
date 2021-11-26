@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, {
   useState, useEffect, useReducer, useCallback,
 } from 'react'
@@ -23,7 +24,7 @@ import getLois from 'thunks/cameras/getLois'
 import deleteLoi from 'thunks/cameras/deleteLoi'
 import { CardContent } from '@material-ui/core'
 import AlertDialog from 'common/AlertDialog'
-import { Camera, StreamLoi } from 'types'
+import { StreamCapture, StreamLoi } from 'types'
 import { useSelectedId } from 'utils'
 
 const useStyles = makeStyles((theme) => ({
@@ -137,16 +138,18 @@ const LoiCard = (): React.ReactElement => {
   const cameraId = useSelectedId()
   const classes = useStyles()
   const dispatch = useThunkDispatch()
-  const [areaPoints, setAreaPoints] = useState([])
+  const [areaPoints, setAreaPoints] = useState<never[][]>([])
   const [name, setName] = useState('')
-  const [streamCapture, setStreamCapture] = useState(null)
+  const [streamCapture, setStreamCapture] = useState<StreamCapture | null>(null)
   const [state, dispatchLoi] = useReducer(reducer, initialState)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
-  const setSelectedLoi = (loi: StreamLoi) => {
-    if (loi !== null) {
-      setName('')
+  const setSelectedLoi = (loi: StreamLoi | null) => {
+    if (loi === null) {
+      return
     }
+
+    setName('')
     dispatchLoi({ type: 'SET_SELECTED_LOI', loi })
   }
 
@@ -154,25 +157,26 @@ const LoiCard = (): React.ReactElement => {
     if (!cameraId) {
       return
     }
-    dispatch(getLois(cameraId))
+    dispatch(getLois(Number(cameraId)))
       .then((result) => {
-        dispatchLoi({ type: 'SET_ALL', lois: result })
+        dispatchLoi({ type: 'SET_ALL', lois: result as StreamLoi[] })
       })
   }, [cameraId, dispatch])
 
   const submitFunction = useCallback(() => {
-    dispatch(submitLoi(cameraId, areaPoints, name))
+    // @ts-ignore
+    dispatch(submitLoi(Number(cameraId), areaPoints, name))
       .then((result) => {
-        dispatchLoi(({ type: 'SET_OR_ADD', loi: result }))
+        dispatchLoi(({ type: 'SET_OR_ADD', loi: result as StreamLoi }))
         setName('')
       })
   }, [areaPoints, cameraId, dispatch, name])
 
   const commitCapture = useCallback(async () => {
-    const res = await dispatch(captureStream(cameraId))
+    const res = await dispatch(captureStream(Number(cameraId)))
 
     if (res) {
-      setStreamCapture(res)
+      setStreamCapture(res as StreamCapture)
     }
   }, [dispatch, cameraId])
 
@@ -182,10 +186,10 @@ const LoiCard = (): React.ReactElement => {
     if (!cameraId) {
       return
     }
-    dispatch(getStreamCaptureByCameraId(cameraId))
+    dispatch(getStreamCaptureByCameraId(Number(cameraId)))
       .then((result) => {
         if (result) {
-          setStreamCapture(result)
+          setStreamCapture(result as StreamCapture)
         } else {
           setStreamCapture(null)
         }
@@ -194,11 +198,11 @@ const LoiCard = (): React.ReactElement => {
 
   const commitDelete = useCallback(() => {
     if (state.selectedLoi && state.selectedLoi.id) {
-      dispatch(deleteLoi(cameraId, state.selectedLoi.id))
+      dispatch(deleteLoi(Number(cameraId), state.selectedLoi.id))
         .then(() => {
           setSelectedLoi(null)
           setAreaPoints([])
-          dispatchLoi(({ type: 'DELETE', id: state.selectedLoi.id }))
+          dispatchLoi(({ type: 'DELETE', id: Number(state?.selectedLoi?.id) }))
         })
     }
   }, [cameraId, dispatch, state.selectedLoi])
@@ -232,11 +236,16 @@ const LoiCard = (): React.ReactElement => {
                 <InputLabel>selected line of interest</InputLabel>
                 <Select
                   value={state.selectedLoi || ''}
-                  onChange={(e) => setSelectedLoi(e.target.value)}
+                  // @ts-ignore
+                  onChange={(e: React.ChangeEvent<{ value: string }>) => (
+                    // @ts-ignore
+                    setSelectedLoi(e.target.value)
+                  )}
                 >
                   {Array.from(state.lois.values()).map((loi) => (
                     <MenuItem
                       key={loi.id}
+                      // @ts-ignore
                       value={loi}
                     >
                       {loi.name}
@@ -246,11 +255,19 @@ const LoiCard = (): React.ReactElement => {
               </FormControl>
             </div>
             <div className={classes.loiContainer}>
-              <LineOfInterest
-                streamCapture={streamCapture}
-                areaPoints={state.selectedLoi ? state.selectedLoi.polygons : areaPoints}
-                setAreaPoints={setAreaPoints}
-              />
+              {
+                streamCapture
+                && (
+                  <LineOfInterest
+                    streamCapture={streamCapture}
+                    // @ts-ignore
+                    areaPoints={state.selectedLoi ? state.selectedLoi.polygons : areaPoints}
+                    setAreaPoints={setAreaPoints}
+                  />
+                )
+
+              }
+
             </div>
           </CardContent>
           <CardActions

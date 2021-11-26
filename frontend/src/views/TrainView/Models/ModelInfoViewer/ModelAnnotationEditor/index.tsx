@@ -26,7 +26,7 @@ const ModelAnnotationEditor = ({
 }: {
   modelId: number,
   initialAnnotation: string,
-}) => {
+}): JSX.Element => {
   const classes = useStyles()
   const dispatch = useThunkDispatch()
   const [annotation, setAnnotation] = useState('')

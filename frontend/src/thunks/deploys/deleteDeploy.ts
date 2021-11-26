@@ -30,7 +30,6 @@ const deleteDeploy = (
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to delete deploy', 'error'))
     }
-    console.error('error', e)
     return false
   }
 }

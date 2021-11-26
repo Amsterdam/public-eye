@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import { useDrag } from 'react-dnd'
 import { makeStyles } from '@material-ui/core/styles'
 import { StoreContext } from '../context'
@@ -52,7 +52,7 @@ const Circle = ({
   y: number,
   zoom: boolean,
   locked: boolean,
-}) => {
+}): JSX.Element => {
   const classes = useStyles({ circleRadius })
   const {
     identifiers: [hideIdentifiers],

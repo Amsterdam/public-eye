@@ -43,14 +43,18 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const Navigator = (): React.ReactElement => {
+  // @ts-ignore
   const selectedId = useSelectedId()
   const classes = useStyles()
   const history = useHistory()
   const cameras = useSelector((state: RootState) => state.cameras)
 
+  // @ts-ignore
   const items: Camera[] = useMemo(() => pipe(
+    // @ts-ignore
     (tempCameras: Map<number, Camera>) => Array.from(tempCameras.values()),
     reverse,
+    // @ts-ignore
   )(cameras), [cameras])
 
   const navigate = useCallback((id: number) => {

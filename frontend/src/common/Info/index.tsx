@@ -5,7 +5,7 @@ import MuiAlert from '@material-ui/lab/Alert'
 import setInfo from 'actions/general/setInfo'
 import { RootState } from 'reducers'
 
-const Info = () => {
+const Info = (): JSX.Element => {
   const dispatch = useDispatch()
   const { open, message, severity } = useSelector((state: RootState) => state.general.info)
 

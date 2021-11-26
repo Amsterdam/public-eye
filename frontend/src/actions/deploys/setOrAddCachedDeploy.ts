@@ -7,7 +7,7 @@ export type SetOrAddCachedDeploy = {
   deploy: Deploy,
 }
 
-const setOrAddCachedDeploy = (deploy: Deploy) => ({
+const setOrAddCachedDeploy = (deploy: Deploy): SetOrAddCachedDeploy => ({
   type: SET_OR_ADD_CACHED_DEPLOY,
   deploy,
 })

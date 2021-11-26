@@ -17,6 +17,7 @@ import { Job } from 'types'
 type JobsReducer = {
   jobs: Map<number, Job> | null,
   logData: Record<number, string>,
+  // eslint-disable-next-line
   jobArgumentsSpec: Record<string, any> | null,
 }
 

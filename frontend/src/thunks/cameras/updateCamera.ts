@@ -23,7 +23,7 @@ const updateCamera = (
     const url = `${baseUrl}/cameras/${id}?tk=${token}`
     const result = await fetchJson(url, ops)
     batch(() => {
-      dispatch(setOrAddCamera(result))
+      dispatch(setOrAddCamera(result as Camera))
       dispatch(setInfo(true, 'Camera updated'))
     })
   } catch (e) {

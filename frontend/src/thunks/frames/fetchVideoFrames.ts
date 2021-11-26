@@ -13,7 +13,7 @@ const fetchVideoFrames = (
     const { baseUrl } = getState().general
     const token = getToken()
     const json = await fetchJson(`${baseUrl}/files/videos/${videoId}/frames?tk=${token}&skip=${skip}&limit=${limit}`)
-    const frames: Frame[] = (json as Frame[]).map(
+    const frames: Frame[] = (json as unknown as Frame[]).map(
       (frame: Frame) => ({ ...frame, item_id: videoId }),
     )
     dispatch(setFrames(frames))

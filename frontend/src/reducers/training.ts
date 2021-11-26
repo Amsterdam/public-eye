@@ -110,10 +110,16 @@ const setModelTags = (
 
 const setOrAddModel = (
   state: TrainingReducer, action: SetOrAddModel,
-): TrainingReducer => ({
-  ...state,
-  models: new Map(state.models.set(action.model.id, action.model)),
-})
+): TrainingReducer => {
+  if (state.models === null) {
+    return state
+  }
+
+  return {
+    ...state,
+    models: new Map(state.models.set(action.model.id, action.model)),
+  }
+}
 
 const setModels = (
   state: TrainingReducer, action: SetModels,
@@ -148,6 +154,9 @@ const addChartDataRow = (state: TrainingReducer, action: AddChartDataRow) => ({
 })
 
 const deleteTrainingRun = (state: TrainingReducer, action: DeleteTrainingRun) => {
+  if (state.trainingRuns === null) {
+    return state
+  }
   state.trainingRuns.delete(action.id)
 
   return {
@@ -157,6 +166,9 @@ const deleteTrainingRun = (state: TrainingReducer, action: DeleteTrainingRun) =>
 }
 
 const deleteModel = (state: TrainingReducer, action: DeleteModel) => {
+  if (state.models === null) {
+    return state
+  }
   state.models.delete(action.id)
 
   return {
@@ -167,11 +179,17 @@ const deleteModel = (state: TrainingReducer, action: DeleteModel) => {
 
 const setOrAddTrainingRun = (
   state: TrainingReducer, action: SetOrAddTrainingRun,
-): TrainingReducer => ({
-  ...state,
-  trainingRuns:
-    new Map(state.trainingRuns.set(action.trainingRun.job_id, action.trainingRun)),
-})
+): TrainingReducer => {
+  if (state.trainingRuns === null) {
+    return state
+  }
+
+  return {
+    ...state,
+    trainingRuns:
+      new Map(state.trainingRuns.set(action.trainingRun.job_id, action.trainingRun)),
+  }
+}
 
 const setCachedTrainingRun = (
   state: TrainingReducer, action: SetCachedTrainingRun,
@@ -183,46 +201,70 @@ const setCachedTrainingRun = (
 
 const updateTrainingRun = (
   state: TrainingReducer, action: UpdateTrainingRun,
-): TrainingReducer => ({
-  ...state,
-  trainingRuns: new Map(
-    state.trainingRuns.set(
-      action.jobId,
-      {
-        ...state.trainingRuns.get(action.jobId),
-        [action.property]: action.value,
-      },
+): TrainingReducer => {
+  if (state.trainingRuns === null) {
+    return state
+  }
+
+  const trainingRun = state.trainingRuns.get(action.jobId)
+  if (trainingRun === undefined) {
+    return state
+  }
+  const updatedTrainingRun = {
+    ...trainingRun,
+    [action.property]: action.value,
+  }
+
+  return {
+    ...state,
+    trainingRuns: new Map(
+      state.trainingRuns.set(
+        action.jobId,
+        updatedTrainingRun,
+      ),
     ),
-  ),
-})
+  }
+}
 
 const updateCachedTrainingRun = (
   state: TrainingReducer, action: UpdateCachedTrainingRun,
-): TrainingReducer => ({
-  ...state,
-  vv: console.log(action),
-  trainingRunsCache: new Map(
-    state.trainingRunsCache.set(
-      action.jobId,
-      {
-        ...state.trainingRunsCache.get(action.jobId),
-        [action.property]: action.value,
-      },
+): TrainingReducer => {
+  const trainingRun = state.trainingRunsCache.get(action.jobId)
+  if (trainingRun === undefined) {
+    return state
+  }
+
+  return {
+    ...state,
+    trainingRunsCache: new Map(
+      state.trainingRunsCache.set(
+        action.jobId,
+        {
+          ...trainingRun,
+          [action.property]: action.value,
+        },
+      ),
     ),
-  ),
-})
+  }
+}
 
 const addTrainingRun = (
   state: TrainingReducer, action: AddTrainingRun,
-): TrainingReducer => ({
-  ...state,
-  trainingRuns: new Map([
-    [action.trainingRun.job_id, action.trainingRun],
-    ...Array.from(state.trainingRuns.entries()),
-  ]),
-})
+): TrainingReducer => {
+  if (state.trainingRuns === null) {
+    return state
+  }
 
-const setChartDate = (state: TrainingReducer, action: SetChartData) => ({
+  return {
+    ...state,
+    trainingRuns: new Map([
+      [action.trainingRun.job_id, action.trainingRun],
+      ...Array.from(state.trainingRuns.entries()),
+    ]),
+  }
+}
+
+const setChartDate = (state: TrainingReducer, action: SetChartData): TrainingReducer => ({
   ...state,
   chartData: action.chartData,
 })

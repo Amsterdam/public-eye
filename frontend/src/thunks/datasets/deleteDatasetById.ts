@@ -33,7 +33,6 @@ const deleteDataset = (
     if ((e as StatusError).status === 409) {
       dispatch(setInfo(true, 'Dataset is still used by Train run', 'error'))
     }
-    console.error('error', e)
     return false
   }
 }

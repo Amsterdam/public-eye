@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { BoundingBox as BoundingBoxType } from 'types'
 
 const BORDER_WIDTH = 3

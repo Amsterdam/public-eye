@@ -13,7 +13,7 @@ const fetchCollectionFrames = (
     const { baseUrl } = getState().general
     const token = getToken()
     const json = await fetchJson(`${baseUrl}/collections/${collectionId}/frames/?tk=${token}&skip=${skip}&limit=${limit}`)
-    const frames = (json as Frame[]).map(
+    const frames = (json as unknown as Frame[]).map(
       (frame: Frame) => ({ ...frame, item_id: collectionId }),
     ) as Frame[]
 

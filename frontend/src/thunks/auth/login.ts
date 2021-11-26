@@ -4,7 +4,7 @@ import { AppThunk } from 'store'
 const login = (
   email: string,
   password: string,
-): AppThunk<Promise<string | null>> => async (dispatch, getState) => {
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
     const ops = {
       method: 'POST',
@@ -19,10 +19,9 @@ const login = (
     }
     const { baseUrl } = getState().general
     const json = await fetchJson(`${baseUrl}/users/auth`, ops)
-    setToken(json.token)
+    setToken(json.token as string)
     return json.token
   } catch (e) {
-    console.error(e)
     return null
   }
 }

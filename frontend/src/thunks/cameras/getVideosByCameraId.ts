@@ -1,11 +1,10 @@
 import { getToken, fetchJson, StatusError } from 'utils'
 import setInfo from 'actions/general/setInfo'
-import { Video } from 'types'
 import { AppThunk } from 'store'
 
 const getVideosByCameraId = (
   id: number,
-): AppThunk<Promise<Video[] | null>> => async (dispatch, getState) => {
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
     const token = getToken()
     const { baseUrl } = getState().general

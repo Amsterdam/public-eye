@@ -12,7 +12,7 @@ const StreamInstanceView = ({
   streamInstance,
 }: {
   streamInstance: Deploy
-}) => {
+}): JSX.Element => {
   const dispatch = useDispatch()
   const fabTitle = useMemo(() => (
     streamInstance.job_status === 'running' ? 'Stop deploy' : 'delete'), [streamInstance.job_status])
@@ -47,9 +47,11 @@ const StreamInstanceView = ({
           }
           <LogViewer
             jobId={streamInstance.id}
+            // @ts-ignore
             jobStatus={streamInstance.job_status}
           />
         </Box>
+        {/* @ts-ignore */}
         <JobActionButton
           fabAction={fabAction}
           fabTitle={fabTitle}

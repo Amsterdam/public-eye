@@ -6,7 +6,7 @@ import { AppThunk } from 'store'
 
 const getDeployByJobId = (
   jobId: number,
-): AppThunk<Promise<Deploy | null>> => async (dispatch, getState) => {
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
     const token = getToken()
     const { baseUrl } = getState().general
@@ -19,7 +19,6 @@ const getDeployByJobId = (
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to get deploy', 'error'))
     }
-    console.error(e)
     return null
   }
 }

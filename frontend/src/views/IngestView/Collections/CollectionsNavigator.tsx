@@ -1,9 +1,9 @@
 import React, {
-  useCallback, useState, memo, useMemo, useEffect,
+  useCallback, useState, memo, useMemo,
 } from 'react'
 import { useHistory } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { useAppDispatch } from 'store'
+import { useThunkDispatch } from 'store'
 import * as R from 'ramda'
 import {
   Box,
@@ -27,9 +27,10 @@ const CollectionsNavigatorBody = ({
   const history = useHistory()
   const isFrameView = useFrameView()
   const [checkedItems, setCheckedItems] = useState<Record<number, boolean>>({})
-  const dispatch = useAppDispatch()
+  const dispatch = useThunkDispatch()
   const filter = useFilter()
   const frames = useSelector((state: RootState) => state.navigator.frames)
+  // @ts-ignore
   const selectedFrameIds = Object.keys(checkedItems).filter((id) => checkedItems[id])
   const collections = useSelector((state: RootState) => state.ingest.collections)
   const collectionsCount = useSelector((state: RootState) => (
@@ -37,6 +38,7 @@ const CollectionsNavigatorBody = ({
   ))
 
   const collectionsFetch = useCallback(
+    // @ts-ignore
     (skip, limit) => dispatch(getCollections(skip, limit, filter)),
     [dispatch, filter],
   )
@@ -44,10 +46,13 @@ const CollectionsNavigatorBody = ({
   const selectAllFrames = useCallback(() => {
     const newCheckedItems = R.pipe(
       // only select frames that are locked
+      // @ts-ignore
       R.filter(({ locked }: { locked : boolean }) => locked),
       R.map(({ id }: { id: number }) => [id, true]),
       R.fromPairs,
+      // @ts-ignore
     )(frames)
+    // @ts-ignore
     setCheckedItems(newCheckedItems)
   }, [frames, setCheckedItems])
 
@@ -69,6 +74,7 @@ const CollectionsNavigatorBody = ({
           page={framesPage}
           type="collection"
           checkedItems={checkedItems}
+          // @ts-ignore
           setCheckedItems={setCheckedItems}
         />
       )
@@ -82,6 +88,7 @@ const CollectionsNavigatorBody = ({
         setFramesPage={setFramesPage}
         checkedItems={checkedItems}
         filter={filter}
+        // @ts-ignore
         setCheckedItems={setCheckedItems}
       />
     )
@@ -93,8 +100,11 @@ const CollectionsNavigatorBody = ({
       <Box>
         <NavigatorHeader />
         <Actions
+          // @ts-ignore
           filter={filter}
+          // @ts-ignore
           setFilter={setFilterAction}
+          // @ts-ignore
           selectedFrameIds={selectedFrameIds}
         />
         {list}

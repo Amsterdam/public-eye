@@ -7,7 +7,7 @@ export type AddDeploy = {
   deploy: Deploy,
 }
 
-const addDeploy = (deploy: Deploy) => ({
+const addDeploy = (deploy: Deploy): AddDeploy => ({
   type: ADD_DEPLOY,
   deploy,
 })

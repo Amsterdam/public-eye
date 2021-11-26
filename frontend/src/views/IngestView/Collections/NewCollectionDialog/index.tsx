@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
 import DialogTitle from '@material-ui/core/DialogTitle'
@@ -26,7 +25,7 @@ const NewCollectionDialog = ({
 }: {
   open: boolean,
   handleClose: () => void,
-}) => {
+}): JSX.Element => {
   const classes = useStyles()
   const dispatch = useDispatch()
 

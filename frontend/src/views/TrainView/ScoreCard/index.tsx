@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useState } from 'react'
 import { useThunkDispatch } from 'store'
 import {
@@ -7,7 +8,7 @@ import {
   Typography,
   makeStyles,
 } from '@material-ui/core'
-import { TrainingRun, Score } from 'types'
+import { Score } from 'types'
 import getScores from 'thunks/training/getScores'
 
 const useStyles = makeStyles((theme) => ({
@@ -24,7 +25,7 @@ const ScoreCard = ({
 }: {
   trainingRunId: number | undefined,
   jobStatus: string | undefined,
-}) => {
+}): JSX.Element => {
   const classes = useStyles()
   const dispatch = useThunkDispatch()
   const [scores, setScores] = useState<Score[]>([])

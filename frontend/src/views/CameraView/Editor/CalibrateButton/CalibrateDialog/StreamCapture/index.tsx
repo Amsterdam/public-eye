@@ -4,8 +4,9 @@ import React, {
 import { makeStyles } from '@material-ui/core/styles'
 import * as R from 'ramda'
 import { useDrop } from 'react-dnd'
-import { fromTriangles } from 'transformation-matrix'
+import { fromTriangles, Point as TransPointType } from 'transformation-matrix'
 import Point, { ItemTypes } from './Point'
+import type { TransformationMatrix } from '..'
 
 const useStyles = makeStyles((theme) => ({
   streamCapture: {
@@ -18,8 +19,8 @@ const useStyles = makeStyles((theme) => ({
 const BIRDS_EYE_SIZE = 500
 
 type StreamCaptureProps = {
-  streamCaptureUrl: string,
-  setTransformationMatrix: () => null,
+  streamCaptureUrl: string | null,
+  setTransformationMatrix: React.Dispatch<React.SetStateAction<TransformationMatrix | null>>,
   ordering: string,
 }
 
@@ -31,9 +32,12 @@ const StreamCapture = (props: StreamCaptureProps): React.ReactElement => {
   } = props
   const [points, setPoints] = useState<PointType[]>([])
   const classes = useStyles()
-  const ref = useRef<HTMLImageElement>(null)
+  const ref = useRef<HTMLImageElement | null>(null)
 
   const applyTransformation = useCallback((tempPoints: PointType[]) => {
+    if (ref.current === null) {
+      return
+    }
     const { width } = ref.current.getBoundingClientRect()
 
     const properOrdering = ordering.split('').every((index) => {
@@ -48,12 +52,12 @@ const StreamCapture = (props: StreamCaptureProps): React.ReactElement => {
       return
     }
 
-    const mostTop = R.reduce(
-      R.minBy((a: PointType) => a.top), { top: Infinity },
-    )(tempPoints) as PointType
-    const mostRight = R.reduce(
-      R.maxBy((a: PointType) => a.left), { left: 0 },
-    )(tempPoints) as PointType
+    const mostTop = tempPoints.reduce(
+      (a, b) => (a.top > b.top ? a : b),
+    )
+    const mostRight = tempPoints.reduce(
+      (a, b) => (a.left > b.left ? a : b),
+    )
 
     const sizeDifference = width / BIRDS_EYE_SIZE
 
@@ -63,8 +67,8 @@ const StreamCapture = (props: StreamCaptureProps): React.ReactElement => {
     ) / Math.sqrt(2) / sizeDifference
 
     const topLeft = [
-      (tempPoints[ordering[0]] as PointType).left * sizeDifference,
-      (tempPoints[ordering[0]] as PointType).top * sizeDifference]
+      (tempPoints[Number(ordering[0])]).left * sizeDifference,
+      (tempPoints[Number(ordering[0])]).top * sizeDifference]
 
     const transformTo = [
       topLeft,
@@ -73,22 +77,33 @@ const StreamCapture = (props: StreamCaptureProps): React.ReactElement => {
     ]
 
     const transformFrom = [
-      tempPoints[ordering[0]],
-      tempPoints[ordering[1]],
-      tempPoints[ordering[2]],
+      tempPoints[Number(ordering[0])],
+      tempPoints[Number(ordering[1])],
+      tempPoints[Number(ordering[2])],
     ]
 
-    const A = fromTriangles(transformFrom.map(({ left, top }) => [left, top]), transformTo)
+    const transformed = transformFrom.map(({ left, top }) => [left, top])
+    const A = fromTriangles(
+      transformed as unknown as TransPointType[],
+      transformTo as unknown as TransPointType[],
+    )
     setTransformationMatrix(A)
   }, [ordering, setTransformationMatrix, points.length])
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover(item, monitor) {
+      if (ref.current === null) {
+        return
+      }
       const { left, top } = ref.current.getBoundingClientRect()
-      const { x, y } = monitor.getClientOffset()
+      const xy = monitor.getClientOffset()
+      if (xy === null) {
+        return
+      }
+      const { x, y } = xy
       const newPosition = { left: x - left, top: y - top }
-      setPoints((ps) => R.update(item.index, newPosition)(ps))
+      setPoints((ps) => R.update((item as unknown as { index: number }).index, newPosition)(ps))
     },
     drop() {
       applyTransformation(points)
@@ -99,7 +114,10 @@ const StreamCapture = (props: StreamCaptureProps): React.ReactElement => {
     applyTransformation(points)
   }, [ordering, applyTransformation, points])
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (e: React.MouseEvent<HTMLImageElement>) => {
+    if (ref.current === null) {
+      return
+    }
     const { top, left } = ref.current.getBoundingClientRect()
     const newPoint = { left: e.clientX - left, top: e.clientY - top }
 
@@ -112,6 +130,9 @@ const StreamCapture = (props: StreamCaptureProps): React.ReactElement => {
   }
 
   const makePoint = ({ left, top }: { left: number, top: number }, index: number) => {
+    if (ref.current === null) {
+      return ''
+    }
     const { top: topImage, left: leftImage } = ref.current.getBoundingClientRect()
 
     return (
@@ -136,7 +157,7 @@ const StreamCapture = (props: StreamCaptureProps): React.ReactElement => {
         ref={ref}
         onClick={handleClick}
         className={classes.streamCapture}
-        src={streamCaptureUrl}
+        src={streamCaptureUrl || ''}
       />
       {points.map(makePoint)}
     </div>

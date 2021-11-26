@@ -12,7 +12,7 @@ const GpuDialog = ({
 }: {
   open: boolean,
   handleClose: () => void,
-}) => (
+}): JSX.Element => (
   <Dialog open={open} onClose={handleClose}>
     <DialogTitle>
       Gpu Info

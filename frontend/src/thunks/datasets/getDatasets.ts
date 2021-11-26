@@ -10,7 +10,7 @@ const getDatasets = (
   skip: number,
   limit: number,
   nnType: string,
-): AppThunk<Promise<Dataset | void>> => async (dispatch, getState) => {
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
     dispatch(setDatasets(null))
     const token = getToken()
@@ -32,7 +32,7 @@ const getDatasets = (
 
     batch(() => {
       dispatch(setPagination('datasets', Number(count)))
-      dispatch(setDatasets(items))
+      dispatch(setDatasets(items as Dataset[]))
     })
     return items
   } catch (e) {

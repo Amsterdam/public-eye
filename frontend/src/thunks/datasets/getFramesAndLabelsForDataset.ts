@@ -3,7 +3,7 @@ import { AppThunk } from 'store'
 
 const getFramesAndLabelsForDataset = (
   datasetId: number,
-): AppThunk<Promise<Record<string, unknown>>> => async (dispatch, getState) => {
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
     const token = getToken()
     const { baseUrl } = getState().general

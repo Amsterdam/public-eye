@@ -3,6 +3,7 @@ import { batch } from 'react-redux'
 import setInfo from 'actions/general/setInfo'
 import setOrAddModel from 'actions/training/setOrAddModel'
 import { AppThunk } from 'store'
+import { Model } from 'types'
 
 const updateModel = (
   id: number,
@@ -25,14 +26,13 @@ const updateModel = (
     const result = await fetchJson(`${baseUrl}/neural_networks/models/${id}?tk=${token}`, ops)
     batch(() => {
       dispatch(setInfo(true, 'Annotation updated'))
-      dispatch(setOrAddModel(result))
+      dispatch(setOrAddModel(result as Model))
     })
     return true
   } catch (e) {
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to annotate model', 'error'))
     }
-    console.error('error', e)
     return false
   }
 }

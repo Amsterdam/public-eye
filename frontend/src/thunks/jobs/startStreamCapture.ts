@@ -16,7 +16,9 @@ export const castArguments = (args: StreamArgs) => ({
   roi_id: args.roi_id ? Number(args.roi_id) : null,
 })
 
-const startStreamCapture = (args: StreamArgs): AppThunk<void> => async (dispatch, getState) => {
+const startStreamCapture = (
+  args: StreamArgs,
+): AppThunk<Promise<void>> => async (dispatch, getState) => {
   try {
     const body = JSON.stringify({
       scriptName: 'stream_capture.py',

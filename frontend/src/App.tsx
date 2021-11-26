@@ -3,7 +3,7 @@ import DateFnsUtils from '@date-io/date-fns'
 import { Provider, useDispatch } from 'react-redux'
 import { MuiPickersUtilsProvider } from '@material-ui/pickers'
 import { MuiThemeProvider } from '@material-ui/core/styles'
-import { BrowserRouter as Router, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 import { PrivateRoute, getToken } from 'utils'
 import getUserRoles from 'thunks/auth/getUserRoles'
 import WebsocketHandler from 'common/WebsocketHandler'
@@ -21,7 +21,6 @@ import Info from './common/Info'
 import Header from './common/Header'
 
 const Utilization = () => {
-  const location = useLocation()
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -34,7 +33,7 @@ const Utilization = () => {
   return <></>
 }
 
-const App = (): React.ReactNode => (
+const App = (): JSX.Element => (
   <MuiPickersUtilsProvider utils={DateFnsUtils}>
     <div className="App">
       <Router>

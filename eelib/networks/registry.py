@@ -155,10 +155,12 @@ def get_network(
     model = None
     if network_name == "VICCT":
         model = load_transformer(model_path, cuda, cuda_device)
-    if network_name == "CSRNet":
+    elif network_name == "CSRNet":
         model = load_csrnet(model_path, cuda, cuda_device)
     elif network_name == "Yolo v3":
         model = load_yolo(model_path, cuda, cuda_device)
+    elif network_name == "Yolo v5s":
+        model = yolov5s(model_path, cuda, cuda_device)
     elif network_name == "Line of Interest Density":
         model = load_loi(model_path, cuda, cuda_device)
     elif network_name == "Line of Interest Density 2":

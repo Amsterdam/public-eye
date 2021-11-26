@@ -1,9 +1,7 @@
 import React from 'react'
 import { useThunkDispatch } from 'store'
-import { useSelector } from 'react-redux'
 import {
   filter,
-  path,
 } from 'ramda'
 import {
   Button,
@@ -47,7 +45,7 @@ const ActionRow = ({
   } = React.useContext(StoreContext)
 
   const onDeleteTag = React.useCallback(() => {
-    dispatch(deleteTag(frame.id as number, selectedTagId as number))
+    dispatch(deleteTag(frame.id, selectedTagId as number))
       .then((success) => {
         if (success) {
           setTags((oldTags) => filter(({ id }) => id !== selectedTagId, oldTags))
@@ -93,6 +91,7 @@ const ActionRow = ({
             valueLabelDisplay="auto"
             min={20}
             max={200}
+            // @ts-ignore
             onChange={(e, value) => setZoomSize(value)}
             value={zoomSize}
           />

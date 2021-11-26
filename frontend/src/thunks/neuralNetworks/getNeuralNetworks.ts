@@ -1,9 +1,8 @@
 import { getToken, fetchJson, StatusError } from 'utils'
 import setInfo from 'actions/general/setInfo'
 import { AppThunk } from 'store'
-import { NeuralNetwork } from 'types'
 
-const getNeuralNetworks = (): AppThunk<Promise<NeuralNetwork[] | null>> => async (
+const getNeuralNetworks = (): AppThunk<Promise<unknown>> => async (
   dispatch,
   getState,
 ) => {

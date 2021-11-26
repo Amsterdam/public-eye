@@ -3,12 +3,10 @@ import React, {
   useMemo,
   memo,
 } from 'react'
-import { useHistory } from 'react-router-dom'
 import { Box, makeStyles } from '@material-ui/core'
 import { useSelector } from 'react-redux'
 import { useThunkDispatch } from 'store'
 import getAllCameras from 'thunks/cameras/getAllCameras'
-import getDeploys from 'thunks/deploys/getDeploys'
 import getDeployByJobId from 'thunks/deploys/getDeployByJobId'
 import PageContainer from 'common/PageContainer'
 import ContentContainer from 'common/ContentContainer'
@@ -33,7 +31,7 @@ const DeployBody = ({
   deploy,
 }: {
   deploy: Deploy | null,
-}) => {
+}): JSX.Element | '' => {
   if (deploy === null) {
     return ''
   }
@@ -70,19 +68,23 @@ const DeployView = () => {
 
   useEffect(() => {
     dispatch(getAllCameras())
-    dispatch(getDeploys())
   }, [dispatch])
 
   const deploy = useDeploy(selectedIndex)
 
   const predictionView = useMemo(() => (
-    <EmptyFallbackElement
-      isEmpty={deploy === undefined}
-      fallbackElement={<InfoMarkdown file="/markdowns/deploy.md" />}
-    >
-      <DeployBody deploy={deploy} />
-    </EmptyFallbackElement>
-  ), [deploy])
+    selectedIndex
+    && (
+      /* @ts-ignore */
+      <EmptyFallbackElement
+        isEmpty={deploy === undefined}
+        fallbackElement={<InfoMarkdown file="/markdowns/deploy.md" />}
+      >
+        {/* @ts-ignore */}
+        <DeployBody deploy={deploy} />
+      </EmptyFallbackElement>
+    )
+  ), [deploy, selectedIndex])
 
   return (
     <PageContainer>

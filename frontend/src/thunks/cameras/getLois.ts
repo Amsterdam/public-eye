@@ -1,11 +1,10 @@
 import { getToken, fetchJson, StatusError } from 'utils'
 import setInfo from 'actions/general/setInfo'
 import { AppThunk } from 'store'
-import { StreamLoi } from 'types'
 
 const getLois = (
   cameraId: number,
-): AppThunk<Promise<StreamLoi | null>> => async (dispatch, getState) => {
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
     const token = getToken()
     const { baseUrl } = getState().general

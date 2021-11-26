@@ -2,6 +2,7 @@ import { getToken, fetchJson } from 'utils'
 import setInfo from 'actions/general/setInfo'
 import addUser from 'actions/users/addUser'
 import { AppThunk } from 'store'
+import { User } from 'types'
 
 const newUser = (
   email: string,
@@ -24,10 +25,9 @@ const newUser = (
     const json = await fetchJson(`${baseUrl}/users?tk=${token}`, ops)
     const infoMessage = `user added with email: ${email}`
     dispatch(setInfo(true, infoMessage))
-    dispatch(addUser({ ...json, roles: [] }))
+    dispatch(addUser({ ...json, roles: [] } as unknown as User))
     return true
   } catch (e) {
-    console.error(e)
     return false
   }
 }

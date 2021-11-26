@@ -7,7 +7,7 @@ import { ModelTag } from 'types'
 
 const insertModelTag = (
   name: string,
-): AppThunk<Promise<ModelTag | false>> => async (dispatch, getState) => {
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
     const token = getToken()
     const { baseUrl } = getState().general
@@ -25,14 +25,13 @@ const insertModelTag = (
     const result = await fetchJson(`${baseUrl}/neural_networks/models/tags?tk=${token}`, ops)
     batch(() => {
       dispatch(setInfo(true, 'New model tag created'))
-      dispatch(addModelTag(result))
+      dispatch(addModelTag(result as ModelTag))
     })
     return result
   } catch (e) {
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to annotate model', 'error'))
     }
-    console.error('error', e)
     return false
   }
 }

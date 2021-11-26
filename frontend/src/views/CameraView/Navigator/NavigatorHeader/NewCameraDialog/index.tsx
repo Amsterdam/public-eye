@@ -52,6 +52,7 @@ const NewCameraDialog = (props: NewCameraDialogProps): React.ReactElement => {
   }
 
   const commitUpdateCamera = useCallback(() => {
+    // @ts-ignore
     dispatch(insertCamera(editedCamera))
     handleClose()
   }, [dispatch, editedCamera, handleClose])

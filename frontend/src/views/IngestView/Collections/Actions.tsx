@@ -36,8 +36,9 @@ const Actions = ({
   selectedFrameIds: number[],
   filter: string,
   setFilter: () => void,
-}) => {
+}): JSX.Element => {
   const classes = useStyles()
+  // @ts-ignore
   const selectedId = useSelectedId()
   const [combineDialogOpen, setCombineDialogOpen] = useState(false)
   const [exportDialogOpen, setExportDialogOpen] = useState(false)
@@ -58,10 +59,12 @@ const Actions = ({
             <AddIcon />
           </Button>
           <CreateDatasetDialog
+            // @ts-ignore
             selectedFrameIds={selectedFrameIds}
             disabled={selectedId === null}
           />
           <CombineCollectionsDialog
+            // @ts-ignore
             open={combineDialogOpen}
             handleClose={() => setCombineDialogOpen(false)}
           />
@@ -81,6 +84,7 @@ const Actions = ({
           <TextField
             className={classes.search}
             label="filter"
+            // @ts-ignore
             onChange={(e) => setFilter(e.target.value)}
             value={filter}
           />
@@ -89,6 +93,7 @@ const Actions = ({
       <ExportCollectionDialog
         open={exportDialogOpen}
         handleClose={() => setExportDialogOpen(false)}
+        // @ts-ignore
         collectionId={selectedId}
       />
       <NewCollectionDialog

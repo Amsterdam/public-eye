@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Dataset, BoundingBox as BoundingBoxType } from 'types'
+import { BoundingBox as BoundingBoxType } from 'types'
 import BoundingBox from './BoundingBox'
 
 const useStyles = makeStyles(() => ({
@@ -34,6 +34,7 @@ const ImageWithBoundingBoxes = (props: ImageWithBoundingBoxesProps): React.React
   const scalingFactor = imageWidth ? (imageSize / imageWidth) : 1
 
   const resize = () => {
+    // @ts-ignore
     const {
       width,
       left,
@@ -42,6 +43,7 @@ const ImageWithBoundingBoxes = (props: ImageWithBoundingBoxesProps): React.React
       left: number,
     } = ref.current ? ref.current.getBoundingClientRect() : { width: 800 }
 
+    // @ts-ignore
     setImageLeft(left)
     setImageSize(width)
   }
@@ -75,10 +77,13 @@ const ImageWithBoundingBoxes = (props: ImageWithBoundingBoxesProps): React.React
 
   const createBoundingBox = (boundingBox: BoundingBoxType, index: number) => (
     <BoundingBox
+      // @ts-ignore
       imageHeight={imageHeight}
+      // @ts-ignore
       imageWidth={imageWidth}
       scalingFactor={scalingFactor}
       boundingBox={boundingBox}
+      // @ts-ignore
       imgRef={ref}
       key={index}
     />

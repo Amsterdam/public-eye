@@ -7,8 +7,8 @@ import AlertDialog from 'common/AlertDialog'
 const useStyles = makeStyles(() => ({
   button: {
     position: 'absolute',
-    bottom: ({ right, bottom }: { right: number, bottom: number }) => bottom,
-    right: ({ right, bottom }: { right: number, bottom: number }) => right,
+    bottom: ({ bottom }: { right: number, bottom: number }) => bottom,
+    right: ({ right }: { right: number, bottom: number }) => right,
   },
 }))
 
@@ -26,7 +26,7 @@ const JobActionButton = ({
   dialogTitle: string,
   bottom: number | undefined,
   right: number | undefined,
-}) => {
+}): JSX.Element => {
   const classes = useStyles({ bottom, right })
   const [alertDialogOpen, setAlertDialogOpen] = useState(false)
 

@@ -5,6 +5,7 @@ import setCollections from 'actions/ingest/setCollections'
 import setAllCollections from 'actions/ingest/setAllCollections'
 import setInfo from 'actions/general/setInfo'
 import { AppThunk } from 'store'
+import { Collection } from 'types'
 
 const createNewCollection = (
   collectionName: string,
@@ -20,18 +21,19 @@ const createNewCollection = (
       body,
     }
     const token = getToken()
-    const { baseUrl, collections } = getState().general
+    const { baseUrl } = getState().general
+    const { collections } = getState().ingest
 
     const result = await fetchJson(`${baseUrl}/collections/?tk=${token}`, ops)
     const collection = {
       ...result,
-      frame_count: result.frame_count === null ? 0 : result.frame_count,
+      frame_count: result.frame_count === null ? '0' : result.frame_count as string,
     }
     const infoMessage = `A collection has been created with name: ${collectionName}`
-    const { allCollections } = getState().general
+    const { allCollections } = getState().ingest
     batch(() => {
-      dispatch(setCollections(R.append(collection, collections)))
-      dispatch(setAllCollections(R.append(result, allCollections)))
+      dispatch(setCollections(R.append(collection as Collection, collections || [])))
+      dispatch(setAllCollections(R.append(result as Collection, allCollections || [])))
       dispatch(setInfo(true, infoMessage))
     })
   } catch (e) {

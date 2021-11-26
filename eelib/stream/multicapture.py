@@ -73,12 +73,11 @@ def extract_frame(stream_url, resolution):
 def run_multicapture_streams(frameq, arguments):
     proccess_time_seconds = 60 / len(arguments)
     resolution_map = {}
-    for args in arguments:
-        resolution_map[args['stream']] = extract_resolution(args['stream'])
 
     frame_numbers = defaultdict(lambda: 0)
     try:
         for stream_index, args in cycle(zip(range(len(arguments)), arguments)):
+
             print("extract stream", stream_index)
             start_time = time.time()
 
@@ -87,9 +86,19 @@ def run_multicapture_streams(frameq, arguments):
                 break
 
             try:
-                print("extract frame")
-                frame = extract_frame(
-                    args['stream'], resolution_map[args['stream']])
+                if args['stream'] not in resolution_map:
+                    print("get resolution", args['stream'])
+                    resolution = extract_resolution(args['stream'])
+                    if resolution is not None:
+                        resolution_map[args['stream']] = resolution
+                    else:
+                        print("error getting resolution")
+                        raise Exception("error getting resolution for stream")
+
+                print("extract frame", args['stream'])
+
+                frame = extract_frame(args['stream'], resolution_map[args['stream']])
+
                 if frame is not None:
                     print("got frame")
                     model = store.get_model_by_id(args['model'])

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useCallback, useEffect, useState } from 'react'
 import * as R from 'ramda'
 import { makeStyles } from '@material-ui/core/styles'
@@ -30,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const UserList = () => {
+const UserList = (): JSX.Element => {
   const users: User[] = useSelector((state: RootState) => state.users)
 
   const classes = useStyles()

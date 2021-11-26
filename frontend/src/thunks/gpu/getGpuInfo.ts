@@ -12,7 +12,7 @@ export type Gpu = {
 }
 
 const getGpuInfo = (
-): AppThunk<Promise<Gpu[] | null>> => async (dispatch, getState) => {
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
     const token = getToken()
     const { baseUrl } = getState().general

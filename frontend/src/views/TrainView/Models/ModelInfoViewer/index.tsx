@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react'
 import { useThunkDispatch } from 'store'
 import { Model } from 'types'

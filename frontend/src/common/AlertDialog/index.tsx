@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogTitle from '@material-ui/core/DialogTitle'
@@ -15,7 +14,7 @@ const AlertDialog = ({
   open: boolean,
   submitFunction: () => void,
   handleClose: () => void,
-}) => {
+}): JSX.Element => {
   const onSubmit = () => {
     submitFunction()
     handleClose()

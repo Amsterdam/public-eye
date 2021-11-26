@@ -11,10 +11,11 @@ import { EDIT_USER, EditUserAction } from 'actions/users/editUser'
 import { RESET_STATE, ResetStateAction } from 'actions/general/resetState'
 import { User } from 'types'
 
-const defaultState: User[] = []
+type ReducerState = User[]
+const defaultState: ReducerState = []
 
 const editUserAction = (state: User[], action: { type: string, user: User }) => {
-  const index = findIndex(({ id }) => id === action.user.id)(state)
+  const index = findIndex(({ id }: { id: number }) => id === action.user.id)(state)
 
   if (index === -1) {
     return state
@@ -31,20 +32,20 @@ type ReducerAction = (
   | ResetStateAction
 )
 
-const setAllUser = (action: SetAllUsersAction) => action.users
+const setAllUsers = (action: SetAllUsersAction): ReducerState => action.users
 
-const reducer = (state = defaultState, action: ReducerAction): User[] => {
+const reducer = (state = defaultState, action: ReducerAction): ReducerState => {
   switch (action.type) {
     case RESET_STATE:
       return defaultState
     case SET_ALL_USERS:
-      return setAllUser(action)
+      return setAllUsers(action as SetAllUsersAction)
     case ADD_USER:
-      return append(action.user)(state)
+      return append((action as AddUserAction).user)(state)
     case DELETE_USER:
-      return filter(({ id }) => action.userId !== id, state)
+      return filter(({ id }) => (action as DeleteUserAction).userId !== id, state)
     case EDIT_USER:
-      return editUserAction(state, action)
+      return editUserAction(state, action as EditUserAction)
     default:
       return state
   }

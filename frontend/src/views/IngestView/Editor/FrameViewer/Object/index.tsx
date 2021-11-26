@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, {
   useState, useRef, useCallback, useEffect, useMemo,
 } from 'react'
@@ -10,11 +11,6 @@ import { RootState } from 'reducers'
 import { BoundingBox as BoundingBoxType, Frame } from 'types'
 import BoundingBox from './BoundingBox'
 import ActionRow from './ActionRow'
-
-type ObjectRecognitionProps = {
-  setWidth: () => null,
-  width: number,
-}
 
 type Coord = {
   x: number,
@@ -241,7 +237,7 @@ const ObjectRecognition = ({
       { box }
       { boundingBoxes.map(boundingBoxFromBackend)}
       <ActionRow
-        frameId={frame.id as number}
+        frameId={frame.id}
         setBoundingBoxes={setBoundingBoxes}
         firstPositionCoords={firstPositionCoords}
         secondPositionCoords={secondPositionCoords}

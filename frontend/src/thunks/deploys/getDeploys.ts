@@ -4,6 +4,7 @@ import setDeploys from 'actions/deploys/setDeploys'
 import setInfo from 'actions/general/setInfo'
 import setPagination from 'actions/pagination/setPagination'
 import { AppThunk } from 'store'
+import { Deploy } from 'types'
 
 const getDeploys = (skip = 0, limit = 25): AppThunk<void> => async (
   dispatch, getState,
@@ -16,7 +17,7 @@ const getDeploys = (skip = 0, limit = 25): AppThunk<void> => async (
     const { items, count } = result
 
     batch(() => {
-      dispatch(setDeploys(items))
+      dispatch(setDeploys(items as Deploy[]))
       dispatch(setPagination('deploys', Number(count)))
     })
   } catch (e) {

@@ -24,7 +24,6 @@ const deleteModelTagLink = (
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to insert model tag link', 'error'))
     }
-    console.error('error', e)
     return false
   }
 }

@@ -3,7 +3,13 @@ import { Route } from 'react-router-dom'
 import Runs from './Runs'
 import Models from './Models'
 
-const TrainView = ({ match }: { match: { url: string } }) => (
+const TrainView = ({
+  match,
+}: {
+  match: {
+    url: string,
+  },
+}): JSX.Element => (
   <div>
     <Route
       path={`${match.url}/runs/:id?`}

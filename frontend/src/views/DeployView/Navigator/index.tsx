@@ -58,7 +58,7 @@ type NavigatorProps = {
   selectedIndex: number,
 }
 
-const Navigator = (props: NavigatorProps) => {
+const Navigator = (props: NavigatorProps): JSX.Element => {
   const {
     selectedIndex,
   } = props
@@ -75,12 +75,15 @@ const Navigator = (props: NavigatorProps) => {
 
   const scriptNameToIcon = React.useCallback((scriptName: string) => {
     if (scriptName.includes('stream_multicapture.py')) {
+      // @ts-ignore
       return <MultiIcon />
     }
     if (scriptName.includes('stream_capture.py')) {
+      // @ts-ignore
       return <SingleIcon />
     }
     if (scriptName.includes('capture_camera.py')) {
+      // @ts-ignore
       return <CaptureIcon />
     }
     return ''
@@ -163,6 +166,7 @@ const Navigator = (props: NavigatorProps) => {
       <SideBar>
         <div className={classes.actions}>
           <CaptureDialog
+            // @ts-ignore
             preset={selectedJobLoad}
             open={captureDialogOpen}
             setOpen={setCaptureDialogOpen}
@@ -201,8 +205,10 @@ const Navigator = (props: NavigatorProps) => {
         dialogOpen
         && (
           <NewCameraDialog
+            // @ts-ignore
             preset={selectedJobLoad}
             open={dialogOpen}
+            // @ts-ignore
             handleClose={() => setDialogOpen(false)}
           />
         )
@@ -211,8 +217,10 @@ const Navigator = (props: NavigatorProps) => {
         multiDialogOpen
         && (
           <NewMultiDialog
+            // @ts-ignore
             preset={selectedJobLoad}
             open={multiDialogOpen}
+            // @ts-ignore
             handleClose={() => setMultiDialogOpen(false)}
           />
         )

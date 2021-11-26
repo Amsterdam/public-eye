@@ -30,12 +30,12 @@ def main():
         video_capture = store.get_video_capture_with_job_by_job_id_as_dict(
             job_id
         )
-        send_websocket_message('stream-instance', 'new', video_capture)
+        send_websocket_message('video-capture', 'new', video_capture)
     else:
         video_capture = store.get_video_capture_with_job_by_job_id_as_dict(
             job_id
         )
-        send_websocket_message('stream-instance', 'update', video_capture)
+        send_websocket_message('video-capture', 'update', video_capture)
 
     capture_video(
         name,

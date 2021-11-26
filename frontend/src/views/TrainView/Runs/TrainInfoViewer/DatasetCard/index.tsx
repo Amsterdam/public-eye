@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, {
   useEffect,
   useState,
@@ -91,7 +92,7 @@ const DatasetCard = ({
   jobPayload,
 }: {
   jobPayload: string,
-}) => {
+}): JSX.Element => {
   const classes = useStyles()
   const {
     trainDatasetId,

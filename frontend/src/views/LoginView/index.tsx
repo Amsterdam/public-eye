@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { useThunkDispatch } from 'store'
@@ -31,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const LoginView = () => {
+const LoginView = (): JSX.Element => {
   const classes = useStyles()
   const dispatch = useThunkDispatch()
   const history = useHistory()
@@ -45,6 +46,7 @@ const LoginView = () => {
 
       history.push('/')
     } else {
+      // eslint-disable-next-line no-alert
       alert('Email and password combination is incorrect.')
     }
   }

@@ -3,7 +3,6 @@ import * as R from 'ramda'
 import { RESET_STATE } from 'actions/general/resetState'
 import { SET_VIDEOS, SetVideos } from 'actions/ingest/setVideos'
 import { SET_COLLECTIONS, SetCollection } from 'actions/ingest/setCollections'
-import { ADD_FRAME, AddFrame } from 'actions/ingest/addFrame'
 import { UPDATE_FRAME, UpdateFrame } from 'actions/ingest/updateFrame'
 import { REMOVE_FRAME, RemoveFrame } from 'actions/ingest/removeFrame'
 import { UPDATE_FRAME_COUNT, UpdateFrameCount } from 'actions/ingest/updateFrameCount'
@@ -40,6 +39,9 @@ const updateFrame = (
 ): IngestReducer => {
   if (action.itemType === 'video') {
     const { videos } = state
+    if (videos === null) {
+      return state
+    }
     const index = R.findIndex(({ id }) => id === action.itemId, videos)
 
     if (index === -1) {
@@ -52,9 +54,9 @@ const updateFrame = (
         index,
         {
           ...videos[index],
-          frame_locked_count: stringIntegerArithmetic(
+          frame_locked_count: String(stringIntegerArithmetic(
             videos[index].frame_locked_count, action.func,
-          ),
+          )),
         },
         videos,
       ),
@@ -62,6 +64,9 @@ const updateFrame = (
   }
   if (action.itemType === 'collection') {
     const { collections } = state
+    if (collections === null) {
+      return state
+    }
     const index = R.findIndex(({ id }) => id === action.itemId, collections)
 
     if (index === -1) {
@@ -74,9 +79,9 @@ const updateFrame = (
         index,
         {
           ...collections[index],
-          frame_locked_count: stringIntegerArithmetic(
+          frame_locked_count: String(stringIntegerArithmetic(
             collections[index].frame_locked_count, action.func,
-          ),
+          )),
         },
         collections,
       ),
@@ -113,13 +118,18 @@ const updateFrameCount = (
 ): IngestReducer => {
   if (action.itemType === 'video') {
     const { videos } = state
+    if (videos === null) {
+      return state
+    }
     const index = R.findIndex(({ id }) => id === action.itemId, videos)
 
     if (index === -1) {
       return state
     }
 
-    const frameCount = stringIntegerArithmetic(videos[index].frame_count, action.func)
+    const frameCount = String(
+      stringIntegerArithmetic(videos[index].frame_count, action.func),
+    )
     return {
       ...state,
       videos: R.update(index, { ...videos[index], frame_count: frameCount }, videos),
@@ -127,13 +137,18 @@ const updateFrameCount = (
   }
   if (action.itemType === 'collection') {
     const { collections } = state
+    if (collections === null) {
+      return state
+    }
     const index = R.findIndex(({ id }) => id === action.itemId, collections)
 
     if (index === -1) {
       return state
     }
 
-    const frameCount = stringIntegerArithmetic(collections[index].frame_count, action.func)
+    const frameCount = String(
+      stringIntegerArithmetic(collections[index].frame_count, action.func),
+    )
     return {
       ...state,
       collections: R.update(index, { ...collections[index], frame_count: frameCount }, collections),
@@ -145,7 +160,6 @@ const updateFrameCount = (
 type ReducerAction = (
   SetVideos
   | SetCollection
-  | AddFrame
   | UpdateFrame
   | RemoveFrame
   | UpdateFrameCount
@@ -177,20 +191,6 @@ const setVideos = (
   videos: action.videos,
 })
 
-const addFrame = (
-  state: IngestReducer,
-  action: AddFrame,
-): IngestReducer => ({
-  ...state,
-  frames: {
-    ...state.frames,
-    video: {
-      ...state.frames.video,
-      [action.id]: R.append(action.newFrame, state.frames.video[action.id]),
-    },
-  },
-})
-
 const addVideo = (
   state: IngestReducer,
   action: AddVideo,
@@ -217,8 +217,6 @@ const reducer = (state = defaultState, action: ReducerAction): IngestReducer => 
       return setCollection(state, action as SetCollection)
     case SET_VIDEOS:
       return setVideos(state, action as SetVideos)
-    case ADD_FRAME:
-      return addFrame(state, action as AddFrame)
     default:
       return state
   }

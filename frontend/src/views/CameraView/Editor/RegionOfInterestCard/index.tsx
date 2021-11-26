@@ -111,9 +111,11 @@ const reducer = (state: State, action: ReducerAction) => {
     case 'SET_OR_ADD':
       return {
         selectedRoi: action.roi,
+        // @ts-ignore
         rois: new Map(state.rois.set(action.roi.id, action.roi)),
       }
     case 'DELETE':
+      // @ts-ignore
       state.rois.delete(action.id)
 
       return {
@@ -126,6 +128,7 @@ const reducer = (state: State, action: ReducerAction) => {
 }
 
 const RegionOfInterestCard = (): React.ReactElement => {
+  // @ts-ignore
   const cameraId = useSelectedId()
   const classes = useStyles()
   const dispatch = useThunkDispatch()
@@ -149,16 +152,20 @@ const RegionOfInterestCard = (): React.ReactElement => {
     if (!cameraId) {
       return
     }
+    // @ts-ignore
     dispatch(getRois(cameraId))
       .then((result) => {
+        // @ts-ignore
         dispatchRoi({ type: 'SET_ALL', rois: result })
       })
   }, [cameraId, dispatch])
 
   const submitFunction = useCallback(() => {
     if (streamCapture) {
+      // @ts-ignore
       dispatch(submitRoi(cameraId, areaPoints, name))
         .then((result) => {
+          // @ts-ignore
           dispatchRoi(({ type: 'SET_OR_ADD', roi: result }))
           setName('')
         })
@@ -166,22 +173,27 @@ const RegionOfInterestCard = (): React.ReactElement => {
   }, [areaPoints, dispatch, cameraId, name, streamCapture])
 
   const commitCapture = useCallback(async () => {
+    // @ts-ignore
     const res = await dispatch(captureStream(cameraId))
 
     if (res) {
+      // @ts-ignore
       setStreamCapture(res)
     }
   }, [dispatch, cameraId])
 
   useEffect(() => {
     setAreaPoints([])
+    // @ts-ignore
     setSelectedRoi(null)
     if (!cameraId) {
       return
     }
+    // @ts-ignore
     dispatch(getStreamCaptureByCameraId(cameraId))
       .then((result) => {
         if (result) {
+          // @ts-ignore
           setStreamCapture(result)
         } else {
           setStreamCapture(null)
@@ -191,8 +203,10 @@ const RegionOfInterestCard = (): React.ReactElement => {
 
   const commitDelete = useCallback(() => {
     if (selectedRoi && selectedRoi.id) {
+      // @ts-ignore
       dispatch(deleteRoi(cameraId, selectedRoi.id))
         .then(() => {
+          // @ts-ignore
           setSelectedRoi(null)
           setAreaPoints([])
           dispatchRoi(({ type: 'DELETE', id: selectedRoi.id }))
@@ -220,6 +234,7 @@ const RegionOfInterestCard = (): React.ReactElement => {
                 label="Name"
                 value={name || ''}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  // @ts-ignore
                   setSelectedRoi(null)
                   setName(e.target.value)
                 }}
@@ -231,13 +246,16 @@ const RegionOfInterestCard = (): React.ReactElement => {
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   value={selectedRoi || ''}
+                  // @ts-ignore
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    // @ts-ignore
                     setSelectedRoi(e.target.value)
                   }}
                 >
                   {Array.from(rois.values()).map((roi: StreamRoi) => (
                     <MenuItem
                       key={roi.id}
+                      // @ts-ignore
                       value={roi}
                     >
                       {roi.name}
@@ -247,8 +265,11 @@ const RegionOfInterestCard = (): React.ReactElement => {
               </FormControl>
             </div>
             <RegionOfInterest
+              // @ts-ignore
               streamCapture={streamCapture}
+              // @ts-ignore
               areaPoints={selectedRoi ? selectedRoi.polygons : areaPoints}
+              // @ts-ignore
               setAreaPoints={setAreaPoints}
             />
           </CardContent>

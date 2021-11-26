@@ -20,10 +20,10 @@ const deleteVideo = (
     }
 
     await fetchAndDiscard(`${baseUrl}/files/videos/${videoFileID}?tk=${token}`, ops)
-    const { videos } = getState().general
-    const index = R.findIndex((video) => video.id === Number(videoFileID), videos)
+    const { videos } = getState().ingest
+    const index = R.findIndex((video) => video.id === Number(videoFileID), videos || [])
     batch(() => {
-      dispatch(setVideos(R.remove(index, 1, videos)))
+      dispatch(setVideos(R.remove(index, 1, videos || [])))
       dispatch(setInfo(true, 'Video is deleted'))
     })
     return true

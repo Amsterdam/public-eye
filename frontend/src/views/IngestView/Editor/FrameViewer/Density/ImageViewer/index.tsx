@@ -1,7 +1,6 @@
 import React, {
   useRef,
   useCallback,
-  useMemo,
   useEffect,
 } from 'react'
 import { useDrop } from 'react-dnd'
@@ -11,14 +10,12 @@ import {
 } from 'ramda'
 import updateTag from 'thunks/tags/updateTag'
 import { makeStyles } from '@material-ui/core/styles'
-import { FrameTag } from 'types'
 import { useMeasure } from 'utils'
 import { useMouse } from 'react-use'
 import { StoreContext } from '../context'
 import { ITEM_TYPE_CIRCLE } from '../Circle'
 import ImageCircles from './ImageCircles'
 import ZoomLens from '../ZoomLens'
-import { ZOOMED_IMAGED_SIZE, CIRCLE_RADIUS } from '../constants'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -106,8 +103,7 @@ const ImageViewer = ({
   const {
     zoomSize: [zoomSize],
     zoomLocation: [, setZoomLocation],
-    choosingZoom: [choosingZoom, setChoosingZoom],
-    identifiers: [, setHideIdentifiers],
+    choosingZoom: [choosingZoom],
     renderedImageSize: [, setRenderedImageSize],
     originalImageSize: [[imageWidth], setOriginalImageSize],
     tags: [tags, setTags],
@@ -149,15 +145,19 @@ const ImageViewer = ({
 
   const [, dropImage] = useDrop({
     accept: ITEM_TYPE_CIRCLE,
+    // @ts-ignore
     drop(item: { index: number, x: number, y: number }, monitor) {
+      // @ts-ignore
       if (item.zoom) {
         return
       }
       const delta = monitor.getDifferenceFromInitialOffset()
       const newX = Math.round(
+        // @ts-ignore
         fromDomSpaceToImageSpace((Number(item.x) + delta.x) - newLeft),
       )
       const newY = Math.round(
+        // @ts-ignore
         fromDomSpaceToImageSpace((Number(item.y) + delta.y) - newTop),
       )
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -167,14 +167,18 @@ const ImageViewer = ({
         newX,
         newY,
       ))
+        // @ts-ignore
         .then((result) => setTags(update(item.index, result)))
     },
   })
 
+  // @ts-ignore
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const imageClick = useCallback(handleClick(
+    // @ts-ignore
     (value) => Math.round((value - (newLeft)) / scalingFactor),
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // @ts-ignore
     (value) => Math.round((value - (newTop)) / scalingFactor),
   ), [handleClick, divRef, scalingFactor])
 

@@ -4,11 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npx ts-node ./src/index.ts",
+    "dev": "nodemon",
+    "watch:dev": "nodemon",
+    "test": "jest -i",
+    "lint": "npx eslint . --ext .js,.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/cli": "^7.14.8",
+    "@babel/core": "^7.15.0",
+    "@babel/node": "^7.14.9",
+    "@babel/preset-env": "^7.15.0",
+    "@types/multer": "^1.4.7",
+    "@types/pg": "^8.6.1",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
@@ -22,7 +32,70 @@
     "pg": "^8.5.1",
     "pg-format": "^1.0.4",
     "ramda": "^0.26.1",
+    "send": "^0.17.1",
     "socket.io": "^4.0.1",
-    "uuidv4": "^6.0.0"
+    "typescript": "^4.3.5",
+    "typescript-types": "../typescript-types",
+    "uuidv4": "^6.0.0",
+    "regenerator-runtime": "^0.13.9"
+  },
+  "devDependencies": {
+    "@babel/preset-typescript": "^7.15.0",
+    "@types/bcrypt": "^5.0.0",
+    "@types/enzyme": "^3.10.9",
+    "@types/enzyme-adapter-react-16": "^1.0.6",
+    "@types/fluent-ffmpeg": "^2.1.18",
+    "@types/jest": "^27.0.1",
+    "@types/jsonwebtoken": "^8.5.4",
+    "@types/papaparse": "^5.2.6",
+    "@types/pg-format": "^1.0.2",
+    "@types/ramda": "^0.27.44",
+    "@types/send": "^0.17.1",
+    "@types/socket.io": "^3.0.2",
+    "@types/yup": "^0.29.11",
+    "@typescript-eslint/eslint-plugin": "^4.4.1",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.6",
+    "eslint": "^7.2.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-airbnb-typescript": "^12.3.1",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^24.4.0",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-promise": "^4.3.1",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-unicorn": "^28.0.0",
+    "jest": "^27.0.6",
+    "ts-node": "^10.2.1"
+  },
+  "nodemonConfig": {
+    "exec": "npm run dev",
+    "watch": [
+      "server/*",
+      "public/*"
+    ],
+    "ignore": [
+      "**/__tests__/**",
+      "*.test.js",
+      "*.spec.js"
+    ]
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "roots": [
+      "src"
+    ],
+    "modulePaths": [
+      "src"
+    ],
+    "moduleDirectories": [
+      "node_modules"
+    ],
+    "setupFilesAfterEnv": [
+      "./src/common/testing/setup.ts"
+    ]
   }
 }

@@ -1,6 +1,6 @@
+// @ts-nocheck
 import React, { useState, useCallback } from 'react'
 import * as R from 'ramda'
-import { useSelector } from 'react-redux'
 import { useThunkDispatch } from 'store'
 import { makeStyles } from '@material-ui/core/styles'
 import SpeedDial from '@material-ui/lab/SpeedDial';
@@ -14,9 +14,7 @@ import RenameDialog from 'common/RenameDialog'
 import AddToCollectionDialog from 'common/AddToCollectionDialog'
 import updateFrame from 'thunks/frames/updateFrame'
 import deleteFrame from 'thunks/frames/deleteFrame'
-import { stringIntegerArithmetic } from 'utils'
 import { Frame } from 'types'
-import { RootState } from 'reducers'
 
 const useStyles = makeStyles((theme) => ({
   speedDial: {
@@ -50,7 +48,7 @@ const SpeedDials = (props: SpeedDialsProps): React.ReactElement => {
   const setLock = useCallback(
     (value) => () => {
       dispatch(updateFrame(
-        frame.id as number,
+        frame.id,
         {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           locked: value,
@@ -58,7 +56,7 @@ const SpeedDials = (props: SpeedDialsProps): React.ReactElement => {
         },
         frame.item_id || frame.video_file_id,
         frame.type as string,
-        value ? (x) => x + 1 : (x) => x - 1,
+        value ? (x) => Number(x) + 1 : (x) => Number(x) - 1,
       ))
     }, [dispatch, frame.id, frame.item_id, frame.video_file_id, frame.type, frame.path],
   )

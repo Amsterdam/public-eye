@@ -31,7 +31,10 @@ const deleteDataset = (
     : state
 )
 
-const reducer = (state: ReducerState = defaultState, action: ReducerAction) => {
+const reducer = (
+  state: ReducerState = defaultState,
+  action: ReducerAction,
+): ReducerState => {
   switch (action.type) {
     case ADD_DATASET:
       return addDataset(state, action as AddDataset)

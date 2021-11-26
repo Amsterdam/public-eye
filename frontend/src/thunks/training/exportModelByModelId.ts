@@ -10,11 +10,10 @@ const exportModel = (
     const { baseUrl } = getState().general
     const url = `${baseUrl}/neural_networks/models/${id}/export?tk=${token}`
 
-    await fetchAndDiscard(url)
-    window.location = url
+    await fetchAndDiscard(url, {})
+    window.location.href = url
   } catch (e) {
     dispatch(setInfo(true, 'Something went wrong downloading model.', 'error'))
-    console.error(e)
   }
 }
 

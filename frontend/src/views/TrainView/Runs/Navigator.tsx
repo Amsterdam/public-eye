@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo, useCallback, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useHistory } from 'react-router-dom'
@@ -56,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const Navigator = () => {
+const Navigator = (): JSX.Element => {
   const dispatch = useThunkDispatch()
   const classes = useStyles()
   const history = useHistory()

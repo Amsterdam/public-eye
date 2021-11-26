@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect } from 'react'
 import * as R from 'ramda'
 import { useThunkDispatch } from 'store'
@@ -64,6 +65,7 @@ const ActionRow = (props: ActionRowProps): React.ReactElement => {
     dispatch(getLabels())
       .then((result) => {
         if (result) {
+          // @ts-ignore
           setLabels(result)
         }
       })
@@ -87,6 +89,7 @@ const ActionRow = (props: ActionRowProps): React.ReactElement => {
     const hex = randomHex()
 
     if (boundingBoxSelected) {
+      // @ts-ignore
       const label = labels.find((l) => l.name === labelName)
       if (!label) {
         const newLabel = await dispatch(insertLabel(labelName, hex))

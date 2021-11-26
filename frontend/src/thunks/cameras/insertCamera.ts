@@ -20,7 +20,7 @@ const insertCamera = (camera: Camera): AppThunk<void> => async (dispatch, getSta
     const url = `${baseUrl}/cameras?tk=${token}`
     const result = await fetchJson(url, ops)
     batch(() => {
-      dispatch(setOrAddCamera(result))
+      dispatch(setOrAddCamera(result as Camera))
       dispatch(setInfo(true, 'Camera inserted'))
     })
   } catch (e) {

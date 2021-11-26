@@ -21,7 +21,7 @@ const useGpuInfo = (open: boolean) => {
       dispatch(getGpuInfo())
         .then((newInfo) => {
           if (newInfo !== null && isMounted) {
-            setInfo(newInfo)
+            setInfo(newInfo as Gpu[])
           }
         })
     }

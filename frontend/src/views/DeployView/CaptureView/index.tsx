@@ -15,7 +15,7 @@ const CaptureView = ({
   capture,
 }: {
   capture: Deploy,
-}) => {
+}): JSX.Element => {
   const dispatch = useThunkDispatch()
   const fabTitle = React.useMemo(() => (
     capture.job_status === 'running' ? 'Stop deploy' : 'delete'
@@ -45,9 +45,11 @@ const CaptureView = ({
         }
         <LogViewer
           jobId={capture.id}
+          // @ts-ignore
           jobStatus={capture.job_status}
         />
       </Box>
+      {/* @ts-ignore */}
       <JobActionButton
         fabAction={fabAction}
         fabTitle={fabTitle}

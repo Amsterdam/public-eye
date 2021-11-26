@@ -10,7 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 import getAllCollections from 'thunks/collections/getAllCollections'
 
 type CollectionSelectorProps = {
-  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
+  handleChange: React.Dispatch<React.SetStateAction<Collection | null>>,
   selectedCollection: Collection,
 }
 
@@ -27,24 +27,49 @@ const useCollections = (): Collection[] | null => {
   return collections
 }
 
-const CollectionSelector = (props: CollectionSelectorProps): React.ReactNode => {
+const useCollectionMap = (
+  collections: Collection[] | null,
+): Record<number, Collection> => React.useMemo(() => {
+  if (collections === null) {
+    return {}
+  }
+
+  const collectionMap: Record<number, Collection> = {}
+  collections.forEach((collection) => {
+    collectionMap[collection.id] = collection
+  })
+
+  return collectionMap
+}, [collections])
+
+const CollectionSelector = (props: CollectionSelectorProps): JSX.Element => {
   const {
     handleChange,
     selectedCollection,
   } = props
 
   const collections = useCollections()
+  const collectionMap = useCollectionMap(collections)
+
+  const commitChange = React.useCallback((event: React.ChangeEvent<{ value: unknown }>) => {
+    const collectionId = Number(event.target.value)
+    const collection = collectionMap[collectionId]
+    handleChange(collection)
+  }, [collectionMap, handleChange])
 
   return (
     <FormControl>
       <InputLabel> Collection </InputLabel>
       <Select
         value={selectedCollection || ''}
-        onChange={handleChange}
+        onChange={commitChange}
       >
         {
           (collections || []).map((collection) => (
-            <MenuItem key={collection.name} value={collection}>
+            <MenuItem
+              key={collection.name}
+              value={collection.id}
+            >
               { collection.name }
             </MenuItem>
           ))

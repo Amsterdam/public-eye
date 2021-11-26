@@ -1,6 +1,6 @@
+// @ts-nocheck
 import React, { useRef } from 'react'
 import * as R from 'ramda'
-import PropTypes from 'prop-types'
 
 const BORDER_WIDTH = 2
 

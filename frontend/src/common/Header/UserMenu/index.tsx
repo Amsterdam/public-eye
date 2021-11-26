@@ -13,9 +13,9 @@ const UserMenu = () => {
   const history = useHistory()
   const dispatch = useDispatch()
   const [editUserDialogOpen, setEditUserDialogOpen] = useState(false)
-  const [anchorEl, setAnchorEl] = useState(null)
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
-  const handleClick = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }, [])
 

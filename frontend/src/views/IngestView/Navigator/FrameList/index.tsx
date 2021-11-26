@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, {
   useMemo, useCallback, useRef, useState,
 } from 'react'
@@ -184,23 +185,6 @@ const FrameList = (props: FrameListProps): React.ReactElement => {
   const [timePickerOpen, setTimePickerOpen] = useState(false)
   const headerRef = useRef<HTMLDivElement>(null)
   const [deleteCollectionDialogOpen, setDeleteCollectionDialogOpen] = useState(false)
-  const selectedFrameId = useSelector((state: RootState) => R.path(['general', 'frameSelected', 'id'], state))
-
-  const getTime = useCallback((timestamp) => {
-    const d = new Date(timestamp)
-    const pad = (t: string) => (x: number) => x.toString().padStart(t, 0)
-    return `${pad(2)(d.getUTCHours())}:${pad(2)(d.getMinutes())}:${pad(2)(d.getSeconds())}:${pad(3)(d.getMilliseconds())}`
-  }, [])
-
-  const createTitle = useCallback((frame: Frame) => {
-    if (frame.ts_vid) {
-      return getTime(frame.ts_vid)
-    }
-    if (frame.ts_utc) {
-      return (new Date(frame.ts_utc)).toString()
-    }
-    return getFileName(frame.path)
-  }, [getTime])
 
   const createFrameEntry = useCallback((frame: Frame, index: number) => {
     if (entry === null) {
@@ -214,13 +198,12 @@ const FrameList = (props: FrameListProps): React.ReactElement => {
         checked={checkedItems[frame.id] === true}
         locked={frame.locked === true}
         itemId={entry.id}
-        title={createTitle(frame)}
         page={page}
         itemType={type}
         setCheckedItems={setCheckedItems}
       />
     )
-  }, [checkedItems, entry, type, setCheckedItems, page, createTitle])
+  }, [checkedItems, entry, type, setCheckedItems, page])
 
   const frameList = useMemo(() => {
     const { height } = (headerRef && headerRef.current)

@@ -7,7 +7,7 @@ import getModelTags from 'thunks/training/getModelTags'
 import ModelInfoViewer from './ModelInfoViewer'
 import ModelNavigator from './ModelNavigator'
 
-const Models = () => {
+const Models = (): JSX.Element => {
   const dispatch = useThunkDispatch()
 
   useMount(() => {

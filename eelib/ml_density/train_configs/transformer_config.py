@@ -90,7 +90,7 @@ class Config(TrainConfig):
                 self._get_load_data_val(crop_size)
             ),
             num_workers=args['workers'],
-            batch_size=1,
+            batch_size=1
         )
 
     def _get_load_data_val(self, crop_size):

@@ -1,7 +1,13 @@
-import { getToken, fetchJson } from 'utils'
-import setInfo from 'actions/setInfo'
+import { getToken, fetchJson, StatusError } from 'utils'
+import setInfo from 'actions/general/setInfo'
+import { AppThunk } from 'store'
+import { StreamRoi } from 'types'
 
-const updateRoi = (cameraId, roiId, roi) => async (dispatch, getState) => {
+const updateRoi = (
+  cameraId: number,
+  roiId: number,
+  roi: StreamRoi,
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
     const ops = {
       method: 'PUT',
@@ -17,9 +23,10 @@ const updateRoi = (cameraId, roiId, roi) => async (dispatch, getState) => {
     const result = await fetchJson(url, ops)
     return result
   } catch (e) {
-    if (e.status === 401) {
+    if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to get cameras', 'error'))
     }
+    return null
   }
 }
 

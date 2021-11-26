@@ -66,6 +66,7 @@
     "react-hooks/exhaustive-deps": "error",
     "import/no-extraneous-dependencies": "off",
     "eslint-comments/disable-enable-pair": "off",
-    "eslint-comments/no-unlimited-disable": "off"
+    "eslint-comments/no-unlimited-disable": "off",
+    "@typescript-eslint/ban-ts-comment": "off"
   }
 }

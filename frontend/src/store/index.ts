@@ -20,6 +20,6 @@ export type AppThunk<ReturnType = void> = (
 
 export type AppThunkDispatch = ThunkDispatch<RootState, unknown, Action<string>>
 export type AppDispatch = typeof store.dispatch
+// eslint-disable-next-line
 export const useThunkDispatch = () => useDispatch<AppThunkDispatch>()
-export const useAppDispatch = () => useDispatch<AppDispatch>()
 export default store

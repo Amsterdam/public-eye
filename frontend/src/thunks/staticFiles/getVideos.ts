@@ -16,7 +16,7 @@ const getVideos = (
   filter: string,
 ): AppThunk<void> => async (dispatch, getState) => {
   try {
-    dispatch(setVideos(null))
+    dispatch(setVideos([]))
     const token = getToken()
     const { baseUrl } = getState().general
 
@@ -30,7 +30,7 @@ const getVideos = (
     const videos = items.map((video) => (
       { ...video, frame_count: video.frame_count === null ? 0 : video.frame_count }))
     batch(() => {
-      dispatch(setVideos(videos))
+      dispatch(setVideos(videos as Video[]))
       dispatch(setPagination('videos', Number(count)))
     })
   } catch (e) {

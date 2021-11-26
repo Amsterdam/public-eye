@@ -9,9 +9,9 @@ const getCollections = (
   skip: number,
   limit: number,
   filter: string,
-): AppThunk<void> => async (dispatch, getState) => {
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
-    dispatch(setCollections(null))
+    dispatch(setCollections([]))
     const token = getToken()
     const { baseUrl } = getState().general
     let url = `${baseUrl}/collections?tk=${token}&skip=${skip}`
@@ -30,13 +30,14 @@ const getCollections = (
     batch(() => {
       dispatch(setCollections(collections))
       try {
-        dispatch(setPagination('collections', Number(count)))
+        return dispatch(setPagination('collections', Number(count)))
       } catch (e) {
-        console.log(e)
+        return null
       }
     })
+    return null
   } catch (e) {
-    console.error(e)
+    return null
   }
 }
 

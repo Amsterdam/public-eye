@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useEffect, useState } from 'react'
+import React, { Attributes, ComponentClass, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import {
   Route,
@@ -10,12 +10,12 @@ import {
 } from 'react-router-dom'
 import {
   pathOr,
-  pipe,
   split,
   last,
 } from 'ramda'
 import { RootState } from 'reducers'
 import { Camera } from 'types'
+import { RouteComponentProps } from 'react-router'
 
 export const usePage = () => {
   const params = new URLSearchParams(useLocation().search)
@@ -68,7 +68,7 @@ export const useIngestPath = () => {
 }
 
 type UseMeasure = [
-  HTMLDivElement,
+  (node: HTMLDivElement | null) => void,
   { left: number, top: number, width: number, height: number },
   () => void,
 ]
@@ -138,7 +138,9 @@ export const useSelectedId = (routes: string[]): string | null => {
 }
 
 export const useCamera = (cameraId: string): Camera | undefined => {
-  const camera = useSelector((state: RootState) => state.cameras.get(Number(cameraId)))
+  const camera = useSelector((state: RootState) => {
+    return state.cameras.get(Number(cameraId))
+  })
 
   return camera
 }
@@ -154,12 +156,10 @@ export const setToken = (token: string): void => {
 
 export const getToken = (): string => localStorage.getItem('eagle_eye_token') || ''
 
-export const getFileName = (path: string): string => (
-  pipe(
-    split('/'),
-    last,
-  )(path)
-)
+export const getFileName = (path: string): string | undefined => {
+  const splitted = split('/')(path)
+  return last(splitted)
+}
 
 // type privateRouteType = {
 //   component: React.ComponentType,
@@ -185,13 +185,18 @@ export const getFileName = (path: string): string => (
 // )
 
 type PrivateRouteProps = {
-  component: React.ReactNode,
+  path: string,
+  exact?: boolean,
+  component: (
+    React.FunctionComponent |
+    React.FunctionComponent<{ match: { url: string }}>
+  ),
 }
 
-export const PrivateRoute = ({ component, ...rest }: PrivateRouteProps): React.ReactElement => {
-  const routeComponent = (props: Record<string, unknown>) => (
+export const PrivateRoute = ({ component, ...rest }: PrivateRouteProps): JSX.Element => {
+  const routeComponent = (props: RouteComponentProps) => (
     getToken()
-      ? React.createElement(component, props)
+      ? React.createElement(component as React.FunctionComponent, props as Attributes)
       : <Redirect to={{ pathname: '/login' }} />
   )
   return <Route {...rest} render={routeComponent} />

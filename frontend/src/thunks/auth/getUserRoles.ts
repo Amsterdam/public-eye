@@ -9,10 +9,9 @@ const getUserRoles = (
     const { baseUrl } = getState().general
     const token = tokenArgument || getToken()
     const json = await fetchJson(`${baseUrl}/users/user_by_token?tk=${token}`)
-    dispatch(setUserRoles(json.roles))
+    dispatch(setUserRoles(json.roles as string[]))
     return null
   } catch (e) {
-    console.error(e)
     return null
   }
 }

@@ -49,7 +49,7 @@ const CaptureDialog = ({
     scale_factor: string,
     output_fps: string,
   },
-}) => {
+}): JSX.Element => {
   const classes = useStyles()
   const dispatch = useThunkDispatch()
   const [stream, setStream] = useState('')
@@ -61,6 +61,7 @@ const CaptureDialog = ({
   const commitStart = useCallback(() => {
     dispatch(startVideoCapture({
       stream,
+      // @ts-ignore
       name,
       scale_factor: scaleFactor,
       output_fps: outputFps,
@@ -108,6 +109,7 @@ const CaptureDialog = ({
             <InputLabel>stream url</InputLabel>
             <Select
               value={stream}
+              // @ts-ignore
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStream(e.target.value)}
             >
               {

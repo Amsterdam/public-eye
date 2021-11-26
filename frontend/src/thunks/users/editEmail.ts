@@ -1,7 +1,12 @@
-import { getToken, fetchAndDiscard } from 'utils'
-import setInfo from 'actions/setInfo'
+import { getToken, fetchAndDiscard, StatusError } from 'utils'
+import setInfo from 'actions/general/setInfo'
+import { AppThunk } from 'store'
 
-const editEmail = (id, email, currentPassword) => async (dispatch, getState) => {
+const editEmail = (
+  id: number,
+  email: string,
+  currentPassword: string,
+): AppThunk<Promise<boolean>> => async (dispatch, getState) => {
   try {
     const ops = {
       method: 'PATCH',
@@ -18,13 +23,12 @@ const editEmail = (id, email, currentPassword) => async (dispatch, getState) => 
     const { baseUrl } = getState().general
     await fetchAndDiscard(`${baseUrl}/users/${id}/email?tk=${token}`, ops)
 
-    dispatch(setInfo(true, "Email succesfully changed"))
+    dispatch(setInfo(true, 'Email succesfully changed'))
     return true
   } catch (e) {
-    if (e.status === 401) {
-      dispatch(setInfo(true, "Current password incorrect", 'error'))
+    if ((e as StatusError).status === 401) {
+      dispatch(setInfo(true, 'Current password incorrect', 'error'))
     }
-    console.error(e)
     return false
   }
 }

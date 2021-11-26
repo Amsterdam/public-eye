@@ -55,9 +55,11 @@ const StreamPlayer = (props: StreamPlayerProps): React.ReactElement => {
         },
       })
       hls.loadSource(videoSrc)
+      // @ts-ignore
       hls.attachMedia(video)
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         if (video) {
+          // @ts-ignore
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           video.play()
         }

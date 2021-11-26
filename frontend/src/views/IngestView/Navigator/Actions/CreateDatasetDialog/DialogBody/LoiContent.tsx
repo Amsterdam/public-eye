@@ -1,5 +1,6 @@
+// @ts-nocheck
 import React, { useCallback, useState, memo } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -15,9 +16,6 @@ import {
 import createDatasetFromStreamCollection from 'thunks/jobs/createLoiDatasetFromStreamCollection'
 import createDatasetFromVideoCollection from 'thunks/jobs/createLoiDatasetFromVideoCollection'
 import createDataset from 'thunks/jobs/createLoiDataset'
-import { path } from 'ramda'
-import { RootState } from 'reducers'
-import { Video, Collection } from 'types'
 import { useSelectedId } from 'utils'
 
 type LoiContentProps = {

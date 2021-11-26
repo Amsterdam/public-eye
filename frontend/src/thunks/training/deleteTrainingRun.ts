@@ -30,7 +30,6 @@ const deleteTrainingRun = (
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to delete training run', 'error'))
     }
-    console.error('error', e)
     return false
   }
 }

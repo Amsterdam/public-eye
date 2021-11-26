@@ -1,11 +1,10 @@
 import { getToken, fetchJson, StatusError } from 'utils'
 import setInfo from 'actions/general/setInfo'
 import { AppThunk } from 'store'
-import { TrainingRun } from 'types'
 
 const createTrainingRun = (
   payLoad: Record<string, unknown>,
-): AppThunk<Promise<TrainingRun | null>> => async (dispatch, getState) => {
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
     const body = JSON.stringify(payLoad)
     const ops = {
@@ -26,7 +25,6 @@ const createTrainingRun = (
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to create training run', 'error'))
     }
-    console.error(e)
     return null
   }
 }

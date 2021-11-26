@@ -1,9 +1,10 @@
 export const SET_INFO = 'SET_INFO'
+type SEVERITY = 'error' | 'info' | 'success' | 'warning' | undefined
 export type SetInfo = {
   type: string,
   open: boolean,
   message: string,
-  severity: string,
+  severity: SEVERITY,
 }
 
 const setInfo = (
@@ -12,7 +13,7 @@ const setInfo = (
   type: SET_INFO,
   open,
   message,
-  severity,
+  severity: severity as SEVERITY,
 })
 
 export default setInfo

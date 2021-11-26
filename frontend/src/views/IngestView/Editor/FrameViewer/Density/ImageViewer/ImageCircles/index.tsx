@@ -23,6 +23,7 @@ const ImageCircles = (props: ImageCircleProps) => {
     ({ x, y, id }: { x: number, y: number, id: number }, index: number) => (
       x > 0 && y > 0 && originalHeight > 0 && originalWidth > 0
         ? (
+          // @ts-ignore
           <Circle
             locked={locked}
             y={top + (y / (originalWidth / imageWidth))}
@@ -39,4 +40,5 @@ const ImageCircles = (props: ImageCircleProps) => {
   return tags.map(createCircle)
 }
 
+// @ts-ignore
 export default React.memo(ImageCircles)

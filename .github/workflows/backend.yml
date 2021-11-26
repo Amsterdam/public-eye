@@ -1,0 +1,68 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Backend Test
+
+on:
+  pull_request:
+    types: [opened, closed, synchronize, labeled, unlabeled]
+  push:
+    branches:
+      - master
+
+defaults:
+  run:
+    working-directory: ./backend
+
+jobs:
+  container-job:
+    runs-on: ubuntu-latest
+    container: node:16
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+#     strategy:
+#       matrix:
+#         node-version: [16.x]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '16.11.1'
+  #     - run: pwd
+    - run: npm install
+      working-directory: backend
+      env: 
+        EAGLE_EYE_PATH: /home/runner/work/public-eye/public-eye
+        POSTGRES_HOST: postgres
+        # The default PostgreSQL port
+        POSTGRES_PORT: 5432
+        PGUSER: postgres
+    - run: |
+        apt-get update
+        apt-get install --yes --no-install-recommends postgresql-client
+    - run: npm run test
+      working-directory: backend
+      env: 
+        EAGLE_EYE_PATH: /home/runner/work/public-eye/public-eye
+        POSTGRES_HOST: postgres
+        # The default PostgreSQL port
+        POSTGRES_PORT: 5432
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_USER: postgres
+        POSTGRES_TEST_DATABASE: postgres
+        PGUSER: postgres
+
+        

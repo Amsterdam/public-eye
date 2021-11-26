@@ -26,7 +26,7 @@ const useIngestTab = () => {
   return tab
 }
 
-const Editor = () => {
+const Editor = (): JSX.Element => {
   const selectedId = useSelectedId(['/ingest/videos/:id'])
   const tab = useIngestTab()
   const { frameId } = useIngestPath()

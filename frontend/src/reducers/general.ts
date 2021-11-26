@@ -2,20 +2,16 @@ import { SET_INFO, SetInfo } from 'actions/general/setInfo'
 import { SET_USER_ROLES, SetUserRoles } from 'actions/users/setUserRoles'
 import { RESET_STATE, ResetStateAction } from 'actions/general/resetState'
 
-import {
-  UserRole,
-} from 'types'
-
 type GeneralReducer = {
   baseUrl: string,
   websocketUrl: string,
   info: {
     open: boolean,
-    severity: string,
+    severity: 'error' | 'info' | 'success' | 'warning' | undefined,
     message: string,
   },
   userAuth: {
-    roles: UserRole[],
+    roles: string[],
   },
 }
 

@@ -1,13 +1,13 @@
 import React from 'react'
-// import svg from './Button - Capture - blue.svg'
 import { Box } from '@material-ui/core'
 import { ReactComponent as YourSvg } from './Button - Capture - blue.svg'
 
 const Capture = ({
   props = {},
 }: {
+  // eslint-disable-next-line
   props: undefined | Record<string, any>
-}) => (
+}): JSX.Element => (
   <Box paddingRight={1} paddingLeft={1} display="flex">
     <YourSvg
       {...props}

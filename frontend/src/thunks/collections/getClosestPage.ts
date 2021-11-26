@@ -5,7 +5,7 @@ const getClosestPage = (
   id: number,
   limit: number,
   timestamp: number,
-): AppThunk<Promise<number | null>> => async (dispatch, getState) => {
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
     const token = getToken()
     const { baseUrl } = getState().general
@@ -14,7 +14,6 @@ const getClosestPage = (
     const result = await fetchJson(url)
     return result.page
   } catch (e) {
-    console.error(e)
     return null
   }
 }

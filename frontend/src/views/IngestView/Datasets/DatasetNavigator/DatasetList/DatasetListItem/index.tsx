@@ -64,6 +64,7 @@ const DatasetListItem = (props: DatasetListItemProps): React.ReactElement => {
       </ListItem>
       <SplitDialog
         open={splitDialogOpen}
+        // @ts-ignore
         handleClose={() => setSplitDialogOpen(false)}
         datasetId={datasetId}
       />

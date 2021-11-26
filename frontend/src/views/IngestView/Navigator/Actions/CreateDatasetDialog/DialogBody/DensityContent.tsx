@@ -1,6 +1,6 @@
+// @ts-nocheck
 import React, { useMemo, useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import * as R from 'ramda'
+import { useDispatch } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -23,10 +23,6 @@ const useStyles = makeStyles((theme) => ({
 type PropsType = {
   selectedFrameIds: number[],
   handleClose: () => null,
-}
-type SelectedItemType = {
-  id: number | null,
-  type: string | null,
 }
 
 const DensityContent = (props: PropsType): React.ReactElement => {

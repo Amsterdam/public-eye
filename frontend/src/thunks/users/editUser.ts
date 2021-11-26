@@ -2,6 +2,7 @@ import { getToken, fetchJson, StatusError } from 'utils'
 import editUserAction from 'actions/users/editUser'
 import setInfo from 'actions/general/setInfo'
 import { AppThunk } from 'store'
+import { User } from 'types'
 
 const editUser = (
   id: string,
@@ -24,14 +25,13 @@ const editUser = (
     const { baseUrl } = getState().general
     const json = await fetchJson(`${baseUrl}/users/${id}?tk=${token}`, ops)
 
-    dispatch(editUserAction(json))
+    dispatch(editUserAction(json as User))
     dispatch(setInfo(true, 'User edited'))
     return true
   } catch (e) {
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to edit user', 'error'))
     }
-    console.error(e)
     return false
   }
 }

@@ -1,13 +1,10 @@
-import { batch } from 'react-redux'
-import setLogData from 'actions/jobs/setLogData'
 import { getToken, fetchJson, StatusError } from 'utils'
 import setInfo from 'actions/general/setInfo'
 import { AppThunk } from 'store'
-import { Job } from 'types'
 
 const getJob = (
   jobId: number,
-): AppThunk<Promise<Job | null>> => async (dispatch, getState) => {
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
     const token = getToken()
     const { baseUrl } = getState().general

@@ -4,13 +4,14 @@ import setTrainingRuns from 'actions/training/setTrainingRuns'
 import setInfo from 'actions/general/setInfo'
 import setPagination from 'actions/pagination/setPagination'
 import { AppThunk } from 'store'
+import { TrainingRun } from 'types'
 
 const getTrainingRuns = (
   skip = 0,
   limit = 25,
 ): AppThunk<Promise<boolean | null>> => async (dispatch, getState) => {
   try {
-    dispatch(setTrainingRuns(null))
+    dispatch(setTrainingRuns([]))
     const token = getToken()
     const { baseUrl } = getState().general
 
@@ -19,7 +20,7 @@ const getTrainingRuns = (
 
     batch(() => {
       dispatch(setPagination('trainingRuns', Number(count)))
-      dispatch(setTrainingRuns(items))
+      dispatch(setTrainingRuns(items as TrainingRun[]))
     })
 
     return true
@@ -27,7 +28,6 @@ const getTrainingRuns = (
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to get training runs', 'error'))
     }
-    console.error(e)
     return null
   }
 }

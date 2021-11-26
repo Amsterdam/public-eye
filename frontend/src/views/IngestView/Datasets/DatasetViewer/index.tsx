@@ -16,7 +16,7 @@ import DensityDataset from './DensityDataset'
 import ObjectDataset from './ObjectDataset'
 import LoiDataset from './LoiDataset'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   fab: {
     position: 'absolute',
     bottom: 40,
@@ -33,7 +33,9 @@ const useDatasetType = (datasetId: string | null): string | null => {
       return
     }
 
+    // @ts-ignore
     dispatch(getDatasetById(datasetId))
+      // @ts-ignore
       .then((dataset: Dataset) => {
         if (dataset) {
           setIdToNNType((old) => ({ ...old, [datasetId]: dataset.nn_type }))

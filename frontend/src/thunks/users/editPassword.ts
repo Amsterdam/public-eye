@@ -3,7 +3,7 @@ import setInfo from 'actions/general/setInfo'
 import { AppThunk } from 'store'
 
 const editPassword = (
-  id: string,
+  id: number,
   newPassword: string,
   currentPassword: string,
 ): AppThunk<Promise<boolean>> => async (dispatch, getState) => {
@@ -29,7 +29,6 @@ const editPassword = (
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'Current password incorrect', 'error'))
     }
-    console.error(e)
     return false
   }
 }

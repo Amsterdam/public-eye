@@ -31,12 +31,6 @@ const AddToCollectionDialog = ({
   const dispatch = useDispatch()
   const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null)
 
-  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event && event.target) {
-      setSelectedCollection(event.target.value)
-    }
-  }, [])
-
   const addToCollectionAction = useCallback(() => {
     if (selectedCollection !== null) {
       dispatch(addCollectionFrames(
@@ -60,8 +54,8 @@ const AddToCollectionDialog = ({
             setSelectedCollection !== null
             && (
               <CollectionSelector
-                handleChange={handleChange}
-                selectedCollection={selectedCollection}
+                handleChange={setSelectedCollection}
+                selectedCollection={selectedCollection as Collection}
               />
             )
           }

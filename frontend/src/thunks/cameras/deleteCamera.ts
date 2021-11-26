@@ -27,7 +27,6 @@ const deleteCamera = (
     } else if ((e as StatusError).status === 409) {
       dispatch(setInfo(true, 'Camera cannot be deleted because it is still used in a stream in the deploy view', 'error'))
     }
-    console.error(e)
     return false
   }
 }

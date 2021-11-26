@@ -1,7 +1,7 @@
+// @ts-nocheck
 import React, { useCallback, useState } from 'react'
 import * as R from 'ramda'
 import { useSelector } from 'react-redux'
-import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
 import DialogTitle from '@material-ui/core/DialogTitle'
@@ -28,7 +28,7 @@ const CreateDatasetDialog = ({
 }: {
   selectedFrameIds: string[],
   disabled: boolean,
-}) => {
+}): JSX.Element => {
   const classes = useStyles()
   const [nnType, setNnType] = useState('density_estimation')
   const selectedItem = useSelector((state: RootState) => R.path(['general', 'itemSelected'], state))

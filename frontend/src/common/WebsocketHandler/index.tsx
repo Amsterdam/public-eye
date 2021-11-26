@@ -1,5 +1,8 @@
 import React from 'react'
-import * as R from 'ramda'
+import {
+  last,
+  split,
+} from 'ramda'
 import { useSelector, useDispatch, batch } from 'react-redux'
 import setOrAddTrainingRun from 'actions/training/setOrAddTrainingRun'
 import setOrAddCachedDeploy from 'actions/deploys/setOrAddCachedDeploy'
@@ -25,6 +28,7 @@ import {
   MultiCapture,
   Dataset,
   VideoCapture,
+  Deploy,
 } from 'types'
 import { useMount } from 'react-use'
 
@@ -40,16 +44,14 @@ const TRAINING_SCRIPTS = new Set([
   'train_vicct.py',
 ])
 
-const extractScriptPath = (path: string): string => (
-  R.pipe(
-    R.split('/'),
-    R.last,
-  )(path)
-)
+const extractScriptPath = (path: string): string | undefined => {
+  const splitted = split('/')(path)
+  return last(splitted)
+}
 
 const isTrainingJob = (path: string): boolean => {
   const scriptName = extractScriptPath(path)
-  return TRAINING_SCRIPTS.has(scriptName)
+  return Boolean(scriptName && TRAINING_SCRIPTS.has(scriptName))
 }
 
 const isDeployJob = (path: string): boolean => {
@@ -61,7 +63,9 @@ const isDeployJob = (path: string): boolean => {
   )
 }
 
-export const WebsocketContext = React.createContext<{ socket: SocketIOClient.Socket }>({})
+export const WebsocketContext = React.createContext<{
+  socket: SocketIOClient.Socket | null
+}>({ socket: null })
 
 const WebsocketHandler = ({
   children,
@@ -73,7 +77,9 @@ const WebsocketHandler = ({
   const socket = io(url)
 
   useMount(() => {
+    // eslint-disable-next-line no-console
     socket.on('connect', () => console.log('websocket connected'))
+    // eslint-disable-next-line no-console
     socket.on('connect_error', (err: string) => console.error(err))
 
     const handleJobUpdate = (data: Job) => {
@@ -108,7 +114,7 @@ const WebsocketHandler = ({
       event_type: string,
       data: {
         job_id: number,
-        row: Record<string, number>,
+        row: (number[] | string[]),
       },
     }
 
@@ -168,11 +174,11 @@ const WebsocketHandler = ({
 
       switch (eventType) {
         case 'new':
-          return dispatch(addDeploy({ ...data, id: data.running_job_id }))
+          return dispatch(addDeploy({ ...data, id: data.running_job_id } as Deploy))
         case 'update':
           return batch(() => {
-            dispatch(setOrAddCachedDeploy({ ...data, id: data.running_job_id }))
-            dispatch(setDeploy({ ...data, id: data.running_job_id }))
+            dispatch(setOrAddCachedDeploy({ ...data, id: data.running_job_id } as Deploy))
+            dispatch(setDeploy({ ...data, id: data.running_job_id } as Deploy))
           })
         default:
           return null
@@ -189,11 +195,15 @@ const WebsocketHandler = ({
 
       switch (eventType) {
         case 'new':
-          return dispatch(addDeploy({ ...data, id: data.running_job_id }))
+          return dispatch(addDeploy({ ...data, id: data.running_job_id } as unknown as Deploy))
         case 'update':
           return batch(() => {
-            dispatch(setOrAddCachedDeploy({ ...data, id: data.running_job_id }))
-            dispatch(setDeploy({ ...data, id: data.running_job_id }))
+            dispatch(
+              setOrAddCachedDeploy({ ...data, id: data.running_job_id } as unknown as Deploy),
+            )
+            dispatch(
+              setDeploy({ ...data, id: data.running_job_id } as unknown as Deploy),
+            )
           })
         default:
           return null
@@ -232,11 +242,13 @@ const WebsocketHandler = ({
 
       switch (eventType) {
         case 'new':
-          return dispatch(addDeploy({ ...data, id: data.running_job_id }))
+          return dispatch(addDeploy({ ...data, id: data.running_job_id } as unknown as Deploy))
         case 'update':
           return batch(() => {
-            dispatch(setOrAddCachedDeploy({ ...data, id: data.running_job_id }))
-            dispatch(setDeploy({ ...data, id: data.running_job_id }))
+            dispatch(
+              setOrAddCachedDeploy({ ...data, id: data.running_job_id } as unknown as Deploy),
+            )
+            dispatch(setDeploy({ ...data, id: data.running_job_id } as unknown as Deploy))
           })
         default:
           return null
@@ -246,10 +258,7 @@ const WebsocketHandler = ({
     type InfoMessage = {
       event_type: string,
       data: {
-        type: string,
-        open: boolean,
         message: string,
-        severity: string,
       }
     }
 
@@ -258,7 +267,7 @@ const WebsocketHandler = ({
 
       switch (eventType) {
         case 'new':
-          return dispatch(setInfo(true, data))
+          return dispatch(setInfo(true, data.message))
         default:
           return null
       }

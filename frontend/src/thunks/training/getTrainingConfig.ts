@@ -15,7 +15,6 @@ const getTrainingConfig = (
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to get training config', 'error'))
     }
-    console.error(e)
     return null
   }
 }

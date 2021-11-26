@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { memo, useCallback, useMemo } from 'react'
 import { useThunkDispatch } from 'store'
 import { useSelector } from 'react-redux'

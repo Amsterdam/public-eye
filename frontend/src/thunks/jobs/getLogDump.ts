@@ -17,7 +17,7 @@ const getLogDump = (
       url += `&offset=${offset}`
     }
     const result = await fetchJson(url)
-    dispatch(setLogData(jobId, result.content))
+    dispatch(setLogData(jobId, result.content as string))
   } catch (e) {
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to retrieve log dump', 'error'))

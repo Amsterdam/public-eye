@@ -5,7 +5,7 @@ import {
 import PageContainer from 'common/PageContainer'
 import InfoMarkdown from 'common/InfoMarkdown'
 
-const HomeView = () => (
+const HomeView = (): JSX.Element => (
   <PageContainer>
     <Box padding={2}>
       <InfoMarkdown file="/markdowns/home.md" />

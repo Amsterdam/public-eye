@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, {
   useState, useEffect, useMemo, useCallback,
 } from 'react'
@@ -80,7 +81,7 @@ const CameraForm = ({
   args: StreamArgs,
   setArgs: (args: StreamArgs) => void,
   multicapture: boolean
-}) => {
+}): JSX.Element => {
   const classes = useStyles()
   const dispatch = useThunkDispatch()
   const streamInstances = useSelector((state: RootState) => (
@@ -89,9 +90,12 @@ const CameraForm = ({
   ))
   const cameras = useSelector((state: RootState) => state.cameras)
 
+  // @ts-ignore
   const camerasStreamUrlToId: Record<string, number> = useMemo(() => R.pipe(
+    // @ts-ignore
     R.map(({ id, stream_url: streamUrl }: Camera) => ([streamUrl, id])),
     R.fromPairs,
+    // @ts-ignore
   )(Array.from(cameras.values())), [cameras])
 
   const [neuralNetworks, setNeuralNetworks] = useState([])
@@ -102,6 +106,7 @@ const CameraForm = ({
   useEffect(() => {
     let mounted = true
     if (preset && mounted) {
+      // @ts-ignore
       setArgs((tempArgs: StreamArgs): StreamArgs => ({ ...tempArgs, ...preset }))
     }
     return () => { mounted = false }
@@ -112,9 +117,11 @@ const CameraForm = ({
   useEffect(() => {
     let mounted = true
     if (streamCapture) {
+      // @ts-ignore
       dispatch(getRois(streamCapture.camera_id))
         .then((result) => {
           if (result && mounted) {
+            // @ts-ignore
             setRois(result)
           }
         })
@@ -125,9 +132,11 @@ const CameraForm = ({
   useEffect(() => {
     let mounted = true
     if (streamCapture) {
+      // @ts-ignore
       dispatch(getLois(streamCapture.camera_id))
         .then((result) => {
           if (result && mounted) {
+            // @ts-ignore
             setLois(result)
           }
         })
@@ -140,6 +149,7 @@ const CameraForm = ({
     dispatch(getNeuralNetworks())
       .then((tempNeuralNetworks) => {
         if (tempNeuralNetworks && mounted) {
+          // @ts-ignore
           setNeuralNetworks(tempNeuralNetworks)
         }
       })
@@ -153,6 +163,7 @@ const CameraForm = ({
     }
     const nn = neuralNetworks.find(({ id }) => id === args.network)
     if (nn) {
+      // @ts-ignore
       return nn.nn_type as string
     }
     return ''
@@ -173,6 +184,7 @@ const CameraForm = ({
   const textFieldSetter = useCallback(
     (key) => (e: React.ChangeEvent<HTMLInputElement>) => {
       e.persist()
+      // @ts-ignore
       setArgs((tempArgs: StreamArgs) => ({ ...tempArgs, [key]: e.target.value }))
     }, [setArgs],
   )
@@ -180,12 +192,14 @@ const CameraForm = ({
   const checkBoxSetter = useCallback(
     (key) => (e: React.ChangeEvent<HTMLInputElement>) => {
       e.persist()
+      // @ts-ignore
       setArgs((tempArgs: StreamArgs) => ({ ...tempArgs, [key]: e.target.checked }))
     }, [setArgs],
   )
 
   const plainSetter = useCallback(
     (key) => (value: string | number) => (
+      // @ts-ignore
       setArgs((tempArgs: StreamArgs) => ({
         ...tempArgs, [key]: value,
       }))), [setArgs],
@@ -201,6 +215,7 @@ const CameraForm = ({
       dispatch(getStreamCaptureByCameraId(id))
         .then((result) => {
           batch(() => {
+            // @ts-ignore
             setStreamCapture(result)
           })
         })
@@ -209,6 +224,7 @@ const CameraForm = ({
 
   // when stream is changed via textfield the region of interest should be reset
   const setStream = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // @ts-ignore
     setArgs((tempArgs: StreamArgs) => ({
       ...tempArgs,
       stream: e.target.value,
@@ -294,6 +310,7 @@ const CameraForm = ({
             </InputLabel>
             <Select
               disabled={!streamCapture}
+              // @ts-ignore
               onChange={textFieldSetter('loi_id')}
               value={args.loi_id || ''}
               inputProps={{
@@ -312,7 +329,9 @@ const CameraForm = ({
           </FormControl>
           <LineOfInterest
             imageWidth={350}
+            // @ts-ignore
             streamCapture={streamCapture}
+            // @ts-ignore
             areaPoints={selectedLoi ? selectedLoi.polygons as StreamLoi : []}
           />
         </>
@@ -326,6 +345,7 @@ const CameraForm = ({
 
   const changeNetwork = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     e.persist()
+    // @ts-ignore
     setArgs((tempArgs: StreamArgs) => ({
       ...tempArgs,
       network: e.target.value,
@@ -357,6 +377,7 @@ const CameraForm = ({
               <InputLabel>stream url</InputLabel>
               <Select
                 value={args.stream}
+                // @ts-ignore
                 onChange={setStream}
               >
                 {
@@ -415,6 +436,7 @@ const CameraForm = ({
                 Neural Network
               </InputLabel>
               <Select
+                // @ts-ignore
                 onChange={changeNetwork}
                 value={args.network}
               >
@@ -430,7 +452,9 @@ const CameraForm = ({
           </div>
           <Box width="90%">
             <ModelSelector
+              // @ts-ignore
               network={args.network}
+              // @ts-ignore
               value={args.model}
               onChange={plainSetter('model')}
             />
@@ -479,6 +503,7 @@ const CameraForm = ({
             <div className={classes.gpuSelectorContainer}>
               <GpuSelector
                 selectedGpu={args.selected_gpu}
+                // @ts-ignore
                 setSelectedGpu={plainSetter('selected_gpu')}
               />
             </div>
@@ -496,6 +521,7 @@ const CameraForm = ({
                   </InputLabel>
                   <Select
                     disabled={!streamCapture}
+                    // @ts-ignore
                     onChange={textFieldSetter('roi_id')}
                     value={args.roi_id || ''}
                     inputProps={{
@@ -503,6 +529,7 @@ const CameraForm = ({
                     }}
                   >
                     {
+                      // @ts-ignore
                       rois.concat([{ id: '', name: 'no roi' }]).map(({ id, name }) => (
                         <MenuItem key={id} value={id}>
                           {name}
@@ -513,7 +540,9 @@ const CameraForm = ({
                 </FormControl>
                 <RegionOfInterest
                   imageWidth={350}
+                  // @ts-ignore
                   streamCapture={streamCapture}
+                  // @ts-ignore
                   areaPoints={selectedRoi ? selectedRoi.polygons as StreamRoi : []}
                 />
               </>

@@ -1,13 +1,12 @@
 import { getToken, fetchJson, StatusError } from 'utils'
 import setInfo from 'actions/general/setInfo'
 import { AppThunk } from 'store'
-import { ObjectLabel } from 'types'
 
 const updateBoundingBoxLabel = (
   frameId: number,
   boundingBoxId: number,
   labelId: number,
-): AppThunk<Promise<ObjectLabel | null>> => async (dispatch, getState) => {
+): AppThunk<Promise<unknown>> => async (dispatch, getState) => {
   try {
     const token = getToken()
     const { baseUrl } = getState().general

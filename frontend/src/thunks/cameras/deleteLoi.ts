@@ -24,7 +24,6 @@ const deleteLoi = (
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to delete line of interest', 'error'))
     }
-    console.error(e)
     return false
   }
 }

@@ -98,8 +98,7 @@ def extract_resolution(stream_url):
         width, height = ffmpeg_output.decode("utf-8").replace('\n', '').split('x')
         return int(width), int(height)
     except:
-        print('Something went wrong extracting the resolution of stream: {}'.format(stream_url))
-        sys.exit(1)
+        return None
 
 
 def draw_on_output(output, text, lines=[]):

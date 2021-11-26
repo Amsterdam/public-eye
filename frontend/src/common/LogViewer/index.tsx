@@ -1,7 +1,4 @@
-import React, {
-  useEffect, memo, useRef, useCallback, useMemo,
-} from 'react'
-import * as R from 'ramda'
+import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 import CardContent from '@material-ui/core/CardContent'
@@ -56,17 +53,22 @@ const LogViewer = ({
   const dispatch = useDispatch()
 
   const logContent = useSelector(
-    (state: RootState) => R.pathOr('', ['jobs', 'logData', jobId])(state) as string,
+    (state: RootState) => (jobId
+      ? state.jobs.logData[jobId]
+      : ''
+    ),
   )
-  const atBottom = useRef(true)
+  const atBottom = React.useRef(true)
 
-  const ref = useRef<HTMLDivElement>(null)
+  const ref = React.useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    dispatch(getLogDump(jobId))
+  React.useEffect(() => {
+    if (jobId !== null) {
+      dispatch(getLogDump(jobId))
+    }
   }, [jobId, dispatch])
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!ref.current) return
 
     if (atBottom.current) {
@@ -74,14 +76,17 @@ const LogViewer = ({
     }
   }, [logContent])
 
-  const handleScroll = useCallback(() => {
+  const handleScroll = React.useCallback(() => {
     if (!ref.current) return
 
     atBottom.current = ref.current.scrollTop
       >= (ref.current.scrollHeight - ref.current.offsetHeight)
   }, [])
 
-  const splittedOnNewLine = useMemo(() => {
+  const splittedOnNewLine = React.useMemo(() => {
+    if (!logContent) {
+      return []
+    }
     const splitOnNewLine = logContent.split('\n')
     const withError: { line: string, error: boolean }[] = []
     splitOnNewLine.forEach((line) => {
@@ -124,4 +129,4 @@ const areEqual = (prevProps: PropTypes, nextProps: PropTypes) => {
   return false
 }
 
-export default memo(LogViewer, areEqual)
+export default React.memo(LogViewer, areEqual)

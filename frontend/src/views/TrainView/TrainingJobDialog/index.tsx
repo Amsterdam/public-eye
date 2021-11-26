@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, {
   useState, useEffect, memo, useCallback,
 } from 'react'
@@ -23,7 +24,6 @@ import Tooltip from '@material-ui/core/Tooltip'
 import getDatasets from 'thunks/datasets/getDatasets'
 import getNeuralNetworks from 'thunks/neuralNetworks/getNeuralNetworks'
 import createTrainingRun from 'thunks/training/createTrainingRun'
-import getModels from 'thunks/training/getModels'
 import getAllModels from 'thunks/training/getAllModels'
 import getArgumentsSpec from 'thunks/jobs/getArgumentsSpec'
 import { useMountEffect } from 'utils'
@@ -114,6 +114,7 @@ const checkJson = (jsonString: string): boolean => {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const useArgumentsSpec = (trainScript: string): Record<string, any> | null => {
   const dispatch = useThunkDispatch()
   const argSpec = useSelector((state: RootState) => state.jobs.jobArgumentsSpec)
@@ -162,7 +163,6 @@ const TrainingJobDialog = ({
   const [trainScript, setTrainScript] = useState('')
   const [usePretrainedModel, setUsePretrainedModel] = useState(false)
   const [preTrainedModel, setPretrainedModel] = useState('')
-  const [preTrainedModels, setPretrainedModels] = useState([])
   const [models, setModels] = useState<Model[]>([])
   const [extraArguments, setExtraArguments] = useState('')
   const [selectedGpu, setSelectedGpu] = useState(null)
@@ -248,6 +248,7 @@ const TrainingJobDialog = ({
       return
     }
     if (!checkJson(extraArguments)) {
+      // eslint-disable-next-line
       alert('EXTRA ARGUMENTS MALFORMED')
     }
 
@@ -283,21 +284,6 @@ const TrainingJobDialog = ({
   }, [dispatch, extraArguments, lastFewLayers, name,
     preTrainedModel, selectedGpu, setOpen,
     trainDataset, usePretrainedModel, valDataset, selectedNn])
-
-  useEffect(() => {
-    let mounted = true
-
-    if (trainScript !== '' && mounted) {
-      dispatch(getModels(trainScript))
-        .then((result) => {
-          setPretrainedModels(result)
-        })
-    }
-
-    return () => {
-      mounted = false
-    }
-  }, [trainScript, dispatch])
 
   const changeLastFewLayers = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === '') {

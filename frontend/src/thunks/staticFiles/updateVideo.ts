@@ -3,6 +3,7 @@ import { getToken, fetchJson, StatusError } from 'utils'
 import setVideos from 'actions/ingest/setVideos'
 import setInfo from 'actions/general/setInfo'
 import { AppThunk } from 'store'
+import { Video } from 'types'
 
 const updateVideo = (
   videoFileID: string,
@@ -23,8 +24,8 @@ const updateVideo = (
     }
 
     const video = await fetchJson(`${baseUrl}/files/videos/${videoFileID}?tk=${token}`, ops)
-    const { videos } = getState().general
-    const index = R.findIndex((tempVideo) => tempVideo.id === Number(videoFileID), videos)
+    const { videos } = getState().ingest
+    const index = R.findIndex((tempVideo) => tempVideo.id === Number(videoFileID), videos || [])
 
     if (index === -1) {
       return true
@@ -36,7 +37,7 @@ const updateVideo = (
       type: 'video',
       frame_count: video.frame_count ? video.frame_count : 0,
     }
-    dispatch(setVideos(R.update(index, videoObject, videos)))
+    dispatch(setVideos(R.update(index, videoObject as unknown as Video, videos || [])))
 
     return true
   } catch (e) {

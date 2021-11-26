@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useCallback, useMemo, memo } from 'react'
 import { useSelector } from 'react-redux'
 import { useHistory } from 'react-router-dom'
@@ -29,11 +30,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const Navigator = ({
-  jobs,
-}: {
-  jobs: Map<number, Job>,
-}): React.ReactElement => {
+const Navigator = (): React.ReactElement => {
+  const jobs = useSelector((state: RootState) => state.jobs.jobs)
   const history = useHistory()
   const selectedId = useSelectedId(['/jobs/:id'])
   const page = usePage()

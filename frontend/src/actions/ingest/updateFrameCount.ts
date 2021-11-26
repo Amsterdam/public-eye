@@ -3,11 +3,11 @@ export type UpdateFrameCount = {
   type: string,
   itemId: number,
   itemType: string,
-  func: () => void,
+  func: (x: number | string) => string,
 }
 
 const updateFrameCount = (
-  itemId: number, itemType: string, func: () => void,
+  itemId: number, itemType: string, func: (x: number | string) => string,
 ): UpdateFrameCount => ({
   type: UPDATE_FRAME_COUNT,
   itemId,

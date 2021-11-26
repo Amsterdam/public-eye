@@ -28,7 +28,7 @@ const DatasetSelector = ({
   datasets: Dataset[],
   title: string,
   disabled: boolean | undefined,
-}) => {
+}): JSX.Element => {
   const classes = useStyles()
 
   return (

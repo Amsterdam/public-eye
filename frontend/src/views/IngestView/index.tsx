@@ -4,7 +4,13 @@ import Videos from './Videos'
 import Collections from './Collections'
 import Datasets from './Datasets'
 
-const IngestView = ({ match }: { match: { url: string } }) => (
+const IngestView = ({
+  match,
+}: {
+  match: {
+    url: string,
+  },
+}): JSX.Element => (
   <div>
     <Route
       path={[

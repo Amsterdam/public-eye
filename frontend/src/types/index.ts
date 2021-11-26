@@ -1,6 +1,6 @@
 export type VoidFunction = () => void
 
-export type ChartDataRow = Record<string, number>
+export type ChartDataRow = (number | string)[]
 
 export type UserRole = { id: number, name: string }
 
@@ -93,7 +93,7 @@ export type FrameTag = {
 }
 
 export type Frame = {
-  id?: number | undefined,
+  id: number,
   ts_vid?: number | undefined,
   ts_utc?: number | undefined,
   locked: boolean,

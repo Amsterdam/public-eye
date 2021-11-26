@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
 const LoiDataset = (): React.ReactElement => {
   const dispatch = useThunkDispatch()
   const classes = useStyles()
+  // @ts-ignore
   const selectedId = useSelectedId()
   const token = getToken()
   const baseUrl = useSelector((state: RootState) => state.general.baseUrl)
@@ -31,9 +32,11 @@ const LoiDataset = (): React.ReactElement => {
 
   useEffect(() => {
     if (selectedId === null) return
+    // @ts-ignore
     dispatch(getFramesAndLabelsForDataset(selectedId))
       .then((result) => {
         if (result) {
+          // @ts-ignore
           setFramePairs(result)
         }
       })

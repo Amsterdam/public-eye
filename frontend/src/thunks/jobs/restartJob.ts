@@ -18,8 +18,7 @@ const restartJob = (jobId: number): AppThunk<void> => async (dispatch, getState)
     await fetchAndDiscard(`${baseUrl}/jobs/${jobId}/restart?tk=${token}`, ops)
     batch(() => {
       // reset log when job restarts
-      dispatch(setLogData(jobId, '', 'log'))
-      dispatch(setLogData(jobId, '', 'error'))
+      dispatch(setLogData(jobId, ''))
     })
   } catch (e) {
     if ((e as StatusError).status === 401) {

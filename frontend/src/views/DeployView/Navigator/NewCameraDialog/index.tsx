@@ -95,6 +95,7 @@ const NewCameraDialog = (props: NewCameraDialogProps) => {
         Add a new camera stream!
       </DialogTitle>
       <DialogContent className={classes.content}>
+        {/* @ts-ignore */}
         <CameraForm preset={preset} args={args} setArgs={setArgs} />
       </DialogContent>
       <DialogActions>
@@ -116,6 +117,7 @@ const NewCameraDialog = (props: NewCameraDialogProps) => {
 NewCameraDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
+  // @ts-ignore
   preset: PropTypes.objectOf(),
 }
 

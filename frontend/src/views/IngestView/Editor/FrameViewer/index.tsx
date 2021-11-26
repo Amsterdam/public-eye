@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const useFrame = (frameId: string | undefined) => {
+const useFrame = (frameId: string | undefined): Frame => {
   const dispatch = useThunkDispatch()
   const frame = useSelector((state: RootState) => state.frames[Number(frameId)] || null)
 
@@ -48,11 +48,12 @@ const FrameViewer = ({
   frame,
 }: {
   frame: Frame,
-}) => {
+}): JSX.Element => {
   const [tabSelected, setTabSelected] = useState(0)
   const classes = useStyles()
   const [width, setWidth] = useState('100%')
 
+  // @ts-ignore
   const handleChange = (event, newValue) => {
     setTabSelected(newValue)
   }
@@ -78,6 +79,7 @@ const FrameViewer = ({
         {
           tabSelected === 0
             ? <Density frame={frame} />
+            // @ts-ignore
             : <Object frame={frame} width={width} setWidth={setWidth} />
         }
       </Paper>
@@ -88,7 +90,7 @@ const FrameViewer = ({
   )
 }
 
-const WrapFrame = () => {
+const WrapFrame = (): JSX.Element => {
   const { frameId } = useIngestPath()
   const frame = useFrame(frameId)
 

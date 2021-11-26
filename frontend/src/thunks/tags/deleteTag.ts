@@ -21,7 +21,6 @@ const deleteFrame = (
     if ((e as StatusError).status === 401) {
       dispatch(setInfo(true, 'You are not authorized to delete tag"', 'error'))
     }
-    console.error(e)
     return null
   }
 }

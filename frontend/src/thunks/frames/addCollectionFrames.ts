@@ -3,11 +3,12 @@ import * as R from 'ramda'
 import setInfo from 'actions/general/setInfo'
 import setCollections from 'actions/ingest/setCollections'
 import { AppThunk } from 'store'
+import { Collection } from 'types'
 
 const addCollectionFrames = (
   collectionId: number,
   collectionName: string,
-  frameIds: string[],
+  frameIds: number[],
 ): AppThunk<void> => async (dispatch, getState) => {
   try {
     const body = JSON.stringify({ frameIds })
@@ -25,11 +26,11 @@ const addCollectionFrames = (
 
     const result = await fetchJson(`${baseUrl}/collections/${collectionId}/frames?tk=${token}`, ops)
     const infoMessage = `${frameIds.length} frames added to collection: ${collectionName}`
-    const { collections } = getState().general
+    const { collections } = getState().ingest
 
-    const index = R.findIndex(({ id }) => id === result.id, collections)
+    const index = R.findIndex(({ id }) => id === result.id, collections || [])
 
-    dispatch(setCollections(R.update(index, result, collections)))
+    dispatch(setCollections(R.update(index, result as Collection, collections || [])))
     dispatch(setInfo(true, infoMessage))
   } catch (e) {
     if ((e as StatusError).status === 401) {

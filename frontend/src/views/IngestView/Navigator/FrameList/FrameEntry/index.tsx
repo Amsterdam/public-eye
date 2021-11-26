@@ -1,7 +1,7 @@
+// @ts-nocheck
 import React, { useMemo, useCallback, memo } from 'react'
 import * as R from 'ramda'
-import { useSelector } from 'react-redux'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { useThunkDispatch } from 'store'
 import { makeStyles } from '@material-ui/core/styles'
 import green from '@material-ui/core/colors/green'
@@ -10,13 +10,12 @@ import Typography from '@material-ui/core/Typography'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import Checkbox from '@material-ui/core/Checkbox'
-import Divider from '@material-ui/core/Divider'
 import CheckIcon from '@material-ui/icons/CheckCircle'
 import IconButton from '@material-ui/core/IconButton'
 import updateFrame from 'thunks/frames/updateFrame'
-import { stringIntegerArithmetic, useIngestPath } from 'utils'
-import { RootState } from 'reducers'
+import { usePage, useIngestPath } from 'utils'
 import { Frame } from 'types'
+import { useTitle } from './utils'
 
 const useStyles = makeStyles({
   entry: {
@@ -36,36 +35,33 @@ type FrameEntryProps = {
   itemId: number,
   itemType: string,
   setCheckedItems: React.Dispatch<React.SetStateAction<Record<number, boolean>>>,
-  title: string,
 }
 
-const FrameEntry = (props: FrameEntryProps) => {
-  const {
-    frame,
-    index,
-    checked,
-    locked,
-    itemId,
-    itemType,
-    setCheckedItems,
-    title,
-  } = props
-
+const FrameEntry = ({
+  frame,
+  index,
+  checked,
+  locked,
+  itemId,
+  itemType,
+  setCheckedItems,
+}: FrameEntryProps) => {
   const classes = useStyles()
   const dispatch = useThunkDispatch()
   const history = useHistory()
+  const page = usePage()
   const {
     frameId: selectedFrameId,
     id,
     type,
   } = useIngestPath()
+  const title = useTitle(frame)
 
   const selected = frame.id === Number(selectedFrameId)
 
   const onFrameClick = useCallback(() => {
-    // dispatch(setFrameSelected({ ...frame, type: itemType }))
-    history.push(`/ingest/${String(type)}/${String(id)}/frames/${String(frame.id)}`)
-  }, [frame.id, history, id, type])
+    history.push(`/ingest/${String(type)}/${String(id)}/frames/${String(frame.id)}?page=${page}`)
+  }, [frame.id, history, id, type, page])
 
   const handleCheck = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setCheckedItems((ci) => ({ ...ci, [frame.id]: event.target.checked }))
@@ -75,7 +71,7 @@ const FrameEntry = (props: FrameEntryProps) => {
     (value) => (e: React.ChangeEvent<HTMLInputElement>) => {
       e.preventDefault()
       e.stopPropagation()
-      dispatch(updateFrame(frame.id as number,
+      dispatch(updateFrame(frame.id,
         {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           locked: value,
@@ -83,7 +79,7 @@ const FrameEntry = (props: FrameEntryProps) => {
         },
         itemId,
         itemType,
-        value ? (x) => x + 1 : (x) => x - 1))
+        value ? (x) => Number(x) + 1 : (x) => Number(x) - 1))
     }, [dispatch, frame.id, itemId, itemType, frame.path],
   )
 
@@ -103,30 +99,30 @@ const FrameEntry = (props: FrameEntryProps) => {
   }, [locked, setLock])
 
   return (
-    <React.Fragment key={index}>
-      <ListItem
-        onClick={onFrameClick}
-        button
-        selected={selected}
-        className={classes.entry}
-      >
-        <ListItemIcon>
-          { lockIcon }
-        </ListItemIcon>
-        <Typography className={classes.title} variant="body2">
-          { title }
-        </Typography>
-        <ListItemSecondaryAction>
-          <Checkbox
-            disabled={!frame.locked}
-            checked={checked}
-            onChange={handleCheck}
-            size="small"
-          />
-        </ListItemSecondaryAction>
-      </ListItem>
-      <Divider />
-    </React.Fragment>
+    <ListItem
+      onClick={onFrameClick}
+      key={index}
+      data-testid="frame-entry"
+      button
+      selected={selected}
+      className={classes.entry}
+      // href={`/ingest/${String(type)}/${String(id)}/frames/${String(frame.id)}`}
+    >
+      <ListItemIcon>
+        { lockIcon }
+      </ListItemIcon>
+      <Typography className={classes.title} variant="body2">
+        { title }
+      </Typography>
+      <ListItemSecondaryAction>
+        <Checkbox
+          disabled={!frame.locked}
+          checked={checked}
+          onChange={handleCheck}
+          size="small"
+        />
+      </ListItemSecondaryAction>
+    </ListItem>
   )
 }
 

@@ -7,7 +7,7 @@ export type SetOrAddFrame = {
   frame: Frame,
 }
 
-const setOrAddFrame = (frame: Frame) => ({
+const setOrAddFrame = (frame: Frame): SetOrAddFrame => ({
   type: SET_OR_ADD_FRAME,
   frame,
 })

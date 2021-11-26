@@ -24,8 +24,12 @@ const deleteFrame = (
 
     await fetchAndDiscard(`${baseUrl}/frames/${frameId}?tk=${token}`, ops)
     batch(() => {
-      dispatch(deleteFrameAction(frameId, itemId, itemType))
-      dispatch(updateFrameCountAction(itemId, itemType, (x) => x - 1))
+      dispatch(deleteFrameAction(frameId, itemId, itemType as 'video' | 'collection'))
+      dispatch(updateFrameCountAction(
+        itemId,
+        itemType,
+        (x: number | string) => String(Number(x) - 1),
+      ))
       dispatch(setInfo(true, 'Frame succesfully deleted.'))
       dispatch(deleteNavigatorFrame(frameId))
     })

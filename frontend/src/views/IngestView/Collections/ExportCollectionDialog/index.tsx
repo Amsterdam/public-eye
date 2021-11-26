@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
 import DialogTitle from '@material-ui/core/DialogTitle'
@@ -28,7 +27,7 @@ const ExportCollectionDialog = ({
   open: boolean,
   handleClose: () => void,
   collectionId: number | null,
-}) => {
+}): JSX.Element => {
   const classes = useStyles()
   const dispatch = useDispatch()
 
@@ -39,6 +38,7 @@ const ExportCollectionDialog = ({
   }
 
   const submitAction = () => {
+    // @ts-ignore
     dispatch(exportCollection(collectionId, dataType))
     handleClose()
   }

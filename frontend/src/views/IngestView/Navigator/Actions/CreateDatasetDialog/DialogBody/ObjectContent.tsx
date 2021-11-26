@@ -1,6 +1,6 @@
+// @ts-nocheck
 import React, { useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import * as R from 'ramda'
+import { useDispatch } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -8,8 +8,6 @@ import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import createDataset from 'thunks/jobs/createObjectDataset'
 import createDatasetFromCollection from 'thunks/jobs/createObjectDatasetFromCollection'
-import { Collection } from 'types'
-import { RootState } from 'reducers'
 import { useSelectedId } from 'utils'
 
 const useStyles = makeStyles((theme) => ({
@@ -26,7 +24,7 @@ type PropsType = {
   handleClose: () => null,
 }
 
-const ObjectContent = (props: PropsType): React.ReactElement => {
+const ObjectContent = (props: PropsType): JSX.Element => {
   const {
     selectedFrameIds,
     handleClose,
