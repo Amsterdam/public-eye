@@ -49,7 +49,7 @@ The camera view allows users to manage all aspects related to cameras.
 
 ### Tagging View
 
-This view is specialied for dataset creation. Users can tag images that then can be used for training in order to fine-tune the algorithms.
+This view is specialized for dataset creation. Users can tag images that then can be used for training in order to fine-tune the algorithms.
 
 ![Tagging View](./images/tagging-view.png)
 
