@@ -31,12 +31,12 @@ const onClose = async () => {
   )
   const query = 'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id'
   const res = await db.query(query, [inputEmail, hash])
-  const userId = path([0, 'id'], res)
+  const userId = path(['rows', 0, 'id'], res)
   const roleRes = await db.query(`
     SELECT id FROM roles WHERE name = 'admin'
   `)
 
-  const roleId = path([0, 'id'], roleRes)
+  const roleId = path(['rows', 0, 'id'], roleRes)
   const userRoleQuery = 'INSERT INTO user_roles (user_id, role_id) VALUES ($1, $2)'
 
   await db.query(userRoleQuery, [userId, roleId])
